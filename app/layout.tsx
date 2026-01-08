@@ -11,7 +11,7 @@ const urbanist = Urbanist({
 export const metadata: Metadata = {
   title: "Suncoopng - Subscribe to the Sun",
   description: "Solar energy solutions from Suncoopng. Affordable solar from only R1299 per month.",
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -21,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </head>
       <body className={`${urbanist.className} antialiased`}>{children}</body>
     </html>
   )

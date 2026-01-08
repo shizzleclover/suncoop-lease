@@ -7,7 +7,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="text-black pt-24 md:pt-32 pb-0 px-4 sm:px-6 md:px-12 relative overflow-hidden min-h-[90vh] md:min-h-[85vh]"
+      className="text-black pt-20 sm:pt-24 md:pt-32 pb-0 px-4 sm:px-6 md:px-12 relative overflow-hidden min-h-[80vh] sm:min-h-[85vh] md:min-h-[85vh]"
       style={{ backgroundColor: "#ffcd00" }}
     >
       {/* Decorative Sun Spiral - Top Left */}

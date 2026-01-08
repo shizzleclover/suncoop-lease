@@ -73,15 +73,15 @@ export default function SunnySideSection() {
 
                 {/* CTA Banner */}
                 <div
-                    className="rounded-full py-4 md:py-5 px-6 md:px-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
+                    className="rounded-full py-2.5 sm:py-4 md:py-5 px-4 sm:px-6 md:px-12 flex flex-row items-center justify-center gap-3 sm:gap-4 md:gap-6"
                     style={{ backgroundColor: "#ffcd00" }}
                 >
-                    <h3 className="text-lg md:text-xl font-bold text-black text-center sm:text-left">
+                    <h3 className="text-sm sm:text-lg md:text-xl font-bold text-black text-center sm:text-left whitespace-nowrap">
                         Subscribe to the sun!
                     </h3>
                     <button
                         onClick={handleInterest}
-                        className="px-6 py-2 rounded-full font-bold text-sm text-white hover:opacity-90 transition-opacity whitespace-nowrap"
+                        className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm text-white hover:opacity-90 transition-opacity whitespace-nowrap"
                         style={{ backgroundColor: "#000000" }}
                     >
                         I'm interested
