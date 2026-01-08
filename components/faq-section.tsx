@@ -19,7 +19,7 @@ export default function FaqSection() {
   const faqGroups = [
     {
       id: "group0",
-      title: "Before you Suncoopng",
+      title: "Before you GoSolar",
       items: [
         { id: "item1", q: "What does Suncoopng offer?", a: "We provide affordable solar energy solutions with flexible subscription models." },
         { id: "item2", q: "What does it cost to get started?", a: "Getting started is affordable with our subscription model. No large upfront costs." },
