@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import { CustomSection } from '@/lib/models'
 
+export const dynamic = 'force-dynamic'
+
 // Update custom section
 export async function PUT(
     request: Request,

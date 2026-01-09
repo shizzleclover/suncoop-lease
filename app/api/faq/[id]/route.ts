@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import { FaqItem } from '@/lib/models'
 
+export const dynamic = 'force-dynamic'
+
 // Update FAQ item
 export async function PUT(
     request: Request,

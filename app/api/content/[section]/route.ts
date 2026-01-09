@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import { SiteContent } from '@/lib/models'
 
+// Force dynamic rendering (not static)
+export const dynamic = 'force-dynamic'
+
 export async function GET(
     request: Request,
     { params }: { params: { section: string } }
