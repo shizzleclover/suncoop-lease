@@ -30,6 +30,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
             }),
         ],
         content,
+        immediatelyRender: false,
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML())
         },
