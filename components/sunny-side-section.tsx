@@ -54,6 +54,9 @@ export default function SunnySideSection() {
                                     <p className="text-gray-600 text-xs leading-relaxed">{feature.description}</p>
                                 </div>
                             </div>
+
+
+
                         ))}
                     </div>
 

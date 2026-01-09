@@ -17,9 +17,18 @@ export default function PricingSection() {
   const [plans, setPlans] = useState<PricingPlan[]>([])
   const [selected, setSelected] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number | null>(null)
   const [isPaused, setIsPaused] = useState(false)
+
+  // Check for mobile viewport
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     fetch("/api/content/pricing")
@@ -35,28 +44,23 @@ export default function PricingSection() {
       .finally(() => setIsLoading(false))
   }, [])
 
-  // Infinite scroll animation
+  // Infinite scroll animation - only on desktop
   useEffect(() => {
-    if (plans.length <= 1) return
+    if (plans.length <= 1 || isMobile) return
 
     const container = scrollContainerRef.current
     if (!container) return
 
     let scrollPosition = 0
-    const scrollSpeed = 0.5 // pixels per frame
+    const scrollSpeed = 0.5
 
     const animate = () => {
       if (!isPaused && container) {
         scrollPosition += scrollSpeed
-
-        // Get the width of one set of cards
         const singleSetWidth = container.scrollWidth / 2
-
-        // Reset when we've scrolled one full set
         if (scrollPosition >= singleSetWidth) {
           scrollPosition = 0
         }
-
         container.scrollLeft = scrollPosition
       }
       animationRef.current = requestAnimationFrame(animate)
@@ -69,7 +73,7 @@ export default function PricingSection() {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [plans.length, isPaused])
+  }, [plans.length, isPaused, isMobile])
 
   if (isLoading) {
     return (
@@ -94,25 +98,114 @@ export default function PricingSection() {
     )
   }
 
-  // Duplicate plans for infinite scroll effect
+  // Duplicate plans for infinite scroll effect (desktop only)
   const duplicatedPlans = [...plans, ...plans]
 
+  // Render a single pricing card
+  const renderCard = (plan: PricingPlan, index: number, isForMobile: boolean = false) => {
+    const actualIndex = isForMobile ? index : index % plans.length
+    const isHighlighted = plan.popular || selected === actualIndex
+
+    return (
+      <div
+        key={index}
+        className={`
+          ${isForMobile
+            ? "w-full min-h-[80vh] flex flex-col justify-center"
+            : "flex-shrink-0 w-[320px]"
+          }
+          rounded-none border-2 p-6 cursor-pointer transition-all duration-300 ease-out relative
+          ${isHighlighted
+            ? "shadow-xl z-10 border-white"
+            : "hover:shadow-lg border-black/20"
+          }
+        `}
+        style={{
+          backgroundColor: isHighlighted ? "#ffffff" : "#000000",
+          color: isHighlighted ? "#000000" : "#ffcd00",
+        }}
+        onClick={() => setSelected(actualIndex)}
+      >
+        {/* Popular Badge */}
+        {plan.popular && (
+          <div
+            className="absolute left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-md"
+            style={{ top: isForMobile ? '10px' : '-14px' }}
+          >
+            POPULAR
+          </div>
+        )}
+
+        {/* Plan Name */}
+        <h3 className={`font-extrabold mb-2 ${isForMobile ? "text-3xl mt-8" : "text-4xl mt-2"}`}>
+          {plan.name}
+        </h3>
+
+        {/* Price */}
+        <p className={`font-black ${isForMobile ? "text-2xl" : "text-2xl"}`}>{plan.price}</p>
+        <p className={`text-sm font-semibold mb-4 ${isHighlighted ? "text-gray-600" : "opacity-90"}`}>
+          per month
+        </p>
+
+        {/* Connection Fee */}
+        <div className={`text-sm font-semibold mb-4 pb-4 border-b ${isHighlighted ? "border-gray-200 text-gray-700" : "border-yellow-400/30"}`}>
+          Connection Fee: <span className="font-extrabold">{plan.connectionFee}</span>
+        </div>
+
+        {/* Features */}
+        <div className="space-y-3">
+          <p className={`text-sm font-extrabold mb-3 ${isHighlighted ? "text-gray-800" : ""}`}>
+            Features
+          </p>
+          {plan.features.map((feature, idx) => (
+            <div key={idx} className="flex items-start gap-2">
+              <Check size={18} className={`flex-shrink-0 mt-0.5 ${isHighlighted ? "text-green-600" : "text-yellow-400"}`} strokeWidth={3} />
+              <p className={`text-sm font-medium ${isHighlighted ? "text-gray-700" : ""}`}>
+                {feature}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA Button */}
+        {plan.ctaText && (
+          <a
+            href={plan.ctaLink || "#"}
+            onClick={(e) => e.stopPropagation()}
+            className={`block mt-8 px-6 py-4 text-center font-bold text-base transition-all duration-300 ${isHighlighted
+                ? "bg-black text-white hover:bg-gray-800"
+                : "bg-yellow-400 text-black hover:bg-yellow-300"
+              }`}
+          >
+            {plan.ctaText}
+          </a>
+        )}
+      </div>
+    )
+  }
+
   return (
-    <section className="py-20" style={{ backgroundColor: "#ffcd00" }}>
+    <section className="py-10 md:py-20" style={{ backgroundColor: "#ffcd00" }}>
       <div className="max-w-7xl mx-auto px-4 md:px-12">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-3">Select your power</h2>
-        <p className="text-center text-lg mb-12 font-normal">Affordable subscription plans customised for you.</p>
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-3">Select your power</h2>
+        <p className="text-center text-base md:text-lg mb-8 md:mb-12 font-normal">
+          Affordable subscription plans customised for you.
+        </p>
       </div>
 
-      {/* Infinite Carousel Container */}
+      {/* Mobile: Vertical scroll layout */}
+      <div className="md:hidden px-4">
+        <div className="flex flex-col gap-6">
+          {plans.map((plan, index) => renderCard(plan, index, true))}
+        </div>
+      </div>
+
+      {/* Desktop: Horizontal infinite carousel */}
       <div
-        className="relative overflow-hidden"
+        className="hidden md:block relative overflow-hidden"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={() => setIsPaused(true)}
-        onTouchEnd={() => setTimeout(() => setIsPaused(false), 2000)}
       >
-        {/* Scrollable Container - no scrollbar, controlled by JS */}
         <div
           ref={scrollContainerRef}
           className="flex gap-4 pt-6 pb-4 px-4"
@@ -122,76 +215,7 @@ export default function PricingSection() {
             overflow: 'hidden',
           }}
         >
-          {duplicatedPlans.map((plan, index) => {
-            const isHighlighted = plan.popular || selected === (index % plans.length)
-            return (
-              <div
-                key={index}
-                className={`flex-shrink-0 w-[280px] md:w-[320px] rounded-none border-2 p-4 md:p-6 cursor-pointer transition-all duration-300 ease-out relative ${isHighlighted
-                  ? "shadow-xl scale-[1.02] z-10 border-white"
-                  : "hover:shadow-lg border-black/20"
-                  }`}
-                style={{
-                  backgroundColor: isHighlighted ? "#ffffff" : "#000000",
-                  color: isHighlighted ? "#000000" : "#ffcd00",
-                }}
-                onClick={() => setSelected(index % plans.length)}
-              >
-                {/* Popular Badge */}
-                {plan.popular && (
-                  <div
-                    className="absolute left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-md"
-                    style={{ top: '-14px' }}
-                  >
-                    POPULAR
-                  </div>
-                )}
-
-                {/* Plan Name - Now larger */}
-                <h3 className="text-2xl md:text-4xl font-extrabold mb-2 mt-2">{plan.name}</h3>
-
-                {/* Price - Now smaller */}
-                <p className="text-lg md:text-2xl font-black">{plan.price}</p>
-                <p className={`text-sm font-semibold mb-4 ${isHighlighted ? "text-gray-600" : "opacity-90"}`}>
-                  per month
-                </p>
-
-                {/* Connection Fee */}
-                <div className={`text-sm font-semibold mb-4 pb-4 border-b ${isHighlighted ? "border-gray-200 text-gray-700" : "border-yellow-400/30"}`}>
-                  Connection Fee: <span className="font-extrabold">{plan.connectionFee}</span>
-                </div>
-
-                {/* Features */}
-                <div className="space-y-2">
-                  <p className={`text-sm font-extrabold mb-3 ${isHighlighted ? "text-gray-800" : ""}`}>
-                    Features
-                  </p>
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <Check size={16} className={`flex-shrink-0 mt-0.5 ${isHighlighted ? "text-green-600" : "text-yellow-400"}`} strokeWidth={3} />
-                      <p className={`text-xs md:text-sm font-medium ${isHighlighted ? "text-gray-700" : ""}`}>
-                        {feature}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA Button */}
-                {plan.ctaText && (
-                  <a
-                    href={plan.ctaLink || "#"}
-                    onClick={(e) => e.stopPropagation()}
-                    className={`block mt-6 px-4 py-3 text-center font-bold text-sm transition-all duration-300 ${isHighlighted
-                      ? "bg-black text-white hover:bg-gray-800"
-                      : "bg-yellow-400 text-black hover:bg-yellow-300"
-                      }`}
-                  >
-                    {plan.ctaText}
-                  </a>
-                )}
-              </div>
-            )
-          })}
+          {duplicatedPlans.map((plan, index) => renderCard(plan, index, false))}
         </div>
       </div>
     </section>
