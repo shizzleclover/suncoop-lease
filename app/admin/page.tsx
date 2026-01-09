@@ -3,17 +3,25 @@
 import Link from "next/link"
 import {
     Home, Sparkles, Star, DollarSign, HelpCircle,
-    FileText, PlusSquare, Layers, CheckCircle, RefreshCw, ExternalLink
+    FileText, PlusSquare, Layers, CheckCircle, RefreshCw, ExternalLink,
+    Palette, Image, Type, GripVertical
 } from "lucide-react"
 
 const sections = [
-    { name: "Hero Section", href: "/admin/hero", description: "Edit the main headline and benefits", Icon: Home },
-    { name: "Glow Section", href: "/admin/glow", description: "Manage the 'Get that glow' section", Icon: Sparkles },
-    { name: "Benefits", href: "/admin/benefits", description: "Add/edit benefit cards", Icon: Star },
-    { name: "Pricing", href: "/admin/pricing", description: "Update pricing plans", Icon: DollarSign },
-    { name: "FAQ", href: "/admin/faq", description: "Manage frequently asked questions", Icon: HelpCircle },
-    { name: "Footer", href: "/admin/footer", description: "Edit footer content and links", Icon: FileText },
-    { name: "Custom Sections", href: "/admin/sections", description: "Create new page sections", Icon: PlusSquare },
+    { name: "Hero Section", href: "/admin/hero", description: "Headline, CTA, colors, and background", Icon: Home, features: ["Rich Text", "Colors", "Images"] },
+    { name: "Glow Section", href: "/admin/glow", description: "Title, description, and styling", Icon: Sparkles, features: ["Colors", "Images"] },
+    { name: "Benefits", href: "/admin/benefits", description: "Drag-drop benefit cards", Icon: Star, features: ["Drag-Drop", "Icons"] },
+    { name: "Pricing", href: "/admin/pricing", description: "Plans, features, and pricing", Icon: DollarSign, features: ["Plans", "Colors"] },
+    { name: "FAQ", href: "/admin/faq", description: "Rich text answers, groups", Icon: HelpCircle, features: ["Rich Text", "Groups"] },
+    { name: "Footer", href: "/admin/footer", description: "Contact info and social links", Icon: FileText, features: ["Colors", "Links"] },
+    { name: "Custom Sections", href: "/admin/sections", description: "Create new page sections", Icon: PlusSquare, features: ["Templates", "Rich Text", "Images"] },
+]
+
+const capabilities = [
+    { icon: Type, label: "Rich Text Editor", description: "Format text with bold, italic, headings, and links" },
+    { icon: Palette, label: "Color Picker", description: "Choose any color for backgrounds and text" },
+    { icon: Image, label: "Image Upload", description: "Upload images to Cloudinary" },
+    { icon: GripVertical, label: "Drag & Drop", description: "Reorder sections and items" },
 ]
 
 export default function AdminDashboard() {
@@ -21,7 +29,26 @@ export default function AdminDashboard() {
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-                <p className="text-gray-500 mt-1">Manage your website content</p>
+                <p className="text-gray-500 mt-1">Manage your website content with our advanced CMS</p>
+            </div>
+
+            {/* Capabilities */}
+            <div className="mb-8">
+                <h2 className="text-lg font-bold text-gray-800 mb-4">CMS Capabilities</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {capabilities.map((cap, idx) => {
+                        const Icon = cap.icon
+                        return (
+                            <div key={idx} className="bg-white rounded-lg shadow p-4">
+                                <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center mb-3">
+                                    <Icon size={20} className="text-yellow-600" />
+                                </div>
+                                <h3 className="font-medium text-gray-800">{cap.label}</h3>
+                                <p className="text-sm text-gray-500 mt-1">{cap.description}</p>
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
 
             {/* Quick Stats */}
@@ -73,14 +100,21 @@ export default function AdminDashboard() {
                             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow group"
                         >
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-200 transition-colors">
                                     <IconComponent size={20} className="text-yellow-600" />
                                 </div>
-                                <div>
+                                <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-gray-800 group-hover:text-yellow-600 transition-colors">
                                         {section.name}
                                     </h3>
                                     <p className="text-gray-500 text-sm mt-1">{section.description}</p>
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {section.features.map((feature, idx) => (
+                                            <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                                {feature}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </Link>
@@ -93,7 +127,7 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="font-medium text-yellow-800">Preview your changes</p>
-                        <p className="text-yellow-600 text-sm">Open the public website to see your edits</p>
+                        <p className="text-yellow-600 text-sm">Open the public website to see your edits in real-time</p>
                     </div>
                     <Link
                         href="/"
