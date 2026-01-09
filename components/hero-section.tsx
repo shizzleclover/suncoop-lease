@@ -17,25 +17,36 @@ const defaultContent: HeroContent = {
 }
 
 export default function HeroSection() {
-  const [content, setContent] = useState<HeroContent>(defaultContent)
+  const [content, setContent] = useState<HeroContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetch("/api/content/hero")
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data) setContent({ ...defaultContent, ...data })
+        if (data) {
+          setContent({ ...defaultContent, ...data })
+        } else {
+          setContent(defaultContent)
+        }
       })
-      .catch(() => { })
+      .catch(() => {
+        setContent(defaultContent)
+      })
+      .finally(() => setIsLoading(false))
   }, [])
 
   const handleInterest = () => {
     window.location.href = "https://wa.me/27108803948"
   }
 
+  // Use default while loading to avoid hydration mismatch
+  const displayContent = content || defaultContent
+
   // Split headline into lines
-  const headlineParts = content.headline.split('\n').length > 1
-    ? content.headline.split('\n')
-    : content.headline.split(' ').reduce((acc: string[], word, i, arr) => {
+  const headlineParts = displayContent.headline.split('\n').length > 1
+    ? displayContent.headline.split('\n')
+    : displayContent.headline.split(' ').reduce((acc: string[], word, i, arr) => {
       if (i < Math.ceil(arr.length / 2)) {
         acc[0] = (acc[0] || '') + ' ' + word
       } else {
@@ -82,19 +93,22 @@ export default function HeroSection() {
       <div className="max-w-6xl mx-auto pb-24 md:pb-32 relative z-10">
         {/* Main headline and subheading */}
         <div className="text-center mb-8 md:mb-12 pt-8 md:pt-16">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-4 md:mb-6 leading-[1.1] tracking-tight">
+          <h1
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold mb-4 md:mb-6 leading-[1.1] tracking-tight"
+            suppressHydrationWarning
+          >
             {headlineParts[0]?.trim()}
             <br />
             {headlineParts[1]?.trim()}
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-10 font-medium">
-            {content.subheadline}
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-10 font-medium" suppressHydrationWarning>
+            {displayContent.subheadline}
           </p>
         </div>
 
         {/* Three benefits with checkmarks */}
-        <div className="flex justify-center gap-6 sm:gap-10 md:gap-16 mb-10 md:mb-14 flex-wrap">
-          {content.benefits.slice(0, 3).map((benefit, idx) => (
+        <div className="flex justify-center gap-6 sm:gap-10 md:gap-16 mb-10 md:mb-14 flex-wrap" suppressHydrationWarning>
+          {displayContent.benefits.slice(0, 3).map((benefit, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <div
                 className="rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center mb-3 md:mb-4 flex-shrink-0"
@@ -115,8 +129,9 @@ export default function HeroSection() {
             onClick={handleInterest}
             className="rounded-full px-10 py-4 md:px-12 md:py-5 font-extrabold text-lg md:text-xl hover:opacity-90 transition-opacity relative overflow-hidden"
             style={{ backgroundColor: "#000000", color: "#ffffff" }}
+            suppressHydrationWarning
           >
-            {content.ctaText}
+            {displayContent.ctaText}
           </button>
         </div>
       </div>

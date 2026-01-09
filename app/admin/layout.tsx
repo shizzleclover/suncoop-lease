@@ -3,17 +3,21 @@
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import {
+    Menu, X, LayoutDashboard, Home, Sparkles, Star,
+    HelpCircle, DollarSign, FileText, PlusSquare,
+    LogOut, ExternalLink, ChevronLeft, ChevronRight
+} from "lucide-react"
 
 const navItems = [
-    { href: "/admin", label: "Dashboard", icon: "📊" },
-    { href: "/admin/hero", label: "Hero Section", icon: "🏠" },
-    { href: "/admin/glow", label: "Glow Section", icon: "✨" },
-    { href: "/admin/benefits", label: "Benefits", icon: "⭐" },
-    { href: "/admin/faq", label: "FAQ", icon: "❓" },
-    { href: "/admin/pricing", label: "Pricing", icon: "💰" },
-    { href: "/admin/footer", label: "Footer", icon: "📋" },
-    { href: "/admin/sections", label: "Custom Sections", icon: "➕" },
+    { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
+    { href: "/admin/hero", label: "Hero Section", Icon: Home },
+    { href: "/admin/glow", label: "Glow Section", Icon: Sparkles },
+    { href: "/admin/benefits", label: "Benefits", Icon: Star },
+    { href: "/admin/faq", label: "FAQ", Icon: HelpCircle },
+    { href: "/admin/pricing", label: "Pricing", Icon: DollarSign },
+    { href: "/admin/footer", label: "Footer", Icon: FileText },
+    { href: "/admin/sections", label: "Custom Sections", Icon: PlusSquare },
 ]
 
 export default function AdminLayout({
@@ -129,24 +133,27 @@ export default function AdminLayout({
                                 onClick={() => setSidebarOpen(!sidebarOpen)}
                                 className="p-2 hover:bg-gray-800 rounded"
                             >
-                                {sidebarOpen ? '←' : '→'}
+                                {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
                             </button>
                         </div>
 
                         <nav className="space-y-2">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={`flex items-center gap-3 px-3 py-2 rounded transition-colors ${pathname === item.href
-                                            ? 'bg-yellow-500 text-black'
-                                            : 'hover:bg-gray-800'
-                                        }`}
-                                >
-                                    <span className="text-lg">{item.icon}</span>
-                                    {(sidebarOpen || isMobile) && <span className="text-sm">{item.label}</span>}
-                                </Link>
-                            ))}
+                            {navItems.map((item) => {
+                                const IconComponent = item.Icon
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded transition-colors ${pathname === item.href
+                                                ? 'bg-yellow-500 text-black'
+                                                : 'hover:bg-gray-800'
+                                            }`}
+                                    >
+                                        <IconComponent size={20} />
+                                        {(sidebarOpen || isMobile) && <span className="text-sm">{item.label}</span>}
+                                    </Link>
+                                )
+                            })}
                         </nav>
 
                         <div className="mt-8 pt-4 border-t border-gray-700">
@@ -154,7 +161,7 @@ export default function AdminLayout({
                                 onClick={handleLogout}
                                 className="flex items-center gap-3 px-3 py-2 w-full text-red-400 hover:bg-gray-800 rounded transition-colors"
                             >
-                                <span>🚪</span>
+                                <LogOut size={20} />
                                 {(sidebarOpen || isMobile) && <span className="text-sm">Logout</span>}
                             </button>
 
@@ -163,7 +170,7 @@ export default function AdminLayout({
                                 target="_blank"
                                 className="flex items-center gap-3 px-3 py-2 mt-2 w-full text-blue-400 hover:bg-gray-800 rounded transition-colors"
                             >
-                                <span>🌐</span>
+                                <ExternalLink size={20} />
                                 {(sidebarOpen || isMobile) && <span className="text-sm">View Site</span>}
                             </Link>
                         </div>

@@ -7,12 +7,13 @@ export const dynamic = 'force-dynamic'
 // Update FAQ item
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect()
+        const { id } = await params
         const body = await request.json()
-        const faq = await FaqItem.findByIdAndUpdate(params.id, body, { new: true })
+        const faq = await FaqItem.findByIdAndUpdate(id, body, { new: true })
 
         if (!faq) {
             return NextResponse.json({ error: 'FAQ not found' }, { status: 404 })
@@ -28,11 +29,12 @@ export async function PUT(
 // Delete FAQ item
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect()
-        const faq = await FaqItem.findByIdAndDelete(params.id)
+        const { id } = await params
+        const faq = await FaqItem.findByIdAndDelete(id)
 
         if (!faq) {
             return NextResponse.json({ error: 'FAQ not found' }, { status: 404 })

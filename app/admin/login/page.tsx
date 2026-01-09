@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { Lock } from "lucide-react"
 
 export default function AdminLogin() {
     const [password, setPassword] = useState("")
@@ -46,7 +47,7 @@ export default function AdminLogin() {
                         className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
                         style={{ backgroundColor: "#ffcd00" }}
                     >
-                        <span className="text-2xl">🔐</span>
+                        <Lock size={28} className="text-black" />
                     </div>
                     <h1 className="text-2xl font-bold">Admin Login</h1>
                     <p className="text-gray-500 mt-2">Enter your password to access the admin panel</p>
