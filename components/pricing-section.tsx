@@ -1,9 +1,58 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
+interface PricingPlan {
+  name: string
+  price: string
+  period: string
+  features: string[]
+  popular: boolean
+  ctaText: string
+  ctaLink: string
+  subtitle?: string
+}
+
+const defaultPlans: PricingPlan[] = [
+  {
+    name: "Save",
+    subtitle: "without battery",
+    price: "R1299",
+    period: "per month",
+    features: ["For households spending R2000+ on electricity per month."],
+    popular: false,
+    ctaText: "Get Started",
+    ctaLink: "https://wa.me/27108803948",
+  },
+  {
+    name: "Save & secure",
+    subtitle: "with battery",
+    price: "R1699",
+    period: "per month",
+    features: ["For households spending R3000+ on electricity per month."],
+    popular: true,
+    ctaText: "Get Started",
+    ctaLink: "https://wa.me/27108803948",
+  },
+]
 
 export default function PricingSection() {
-  const [selected, setSelected] = useState("secure")
+  const [plans, setPlans] = useState<PricingPlan[]>(defaultPlans)
+  const [selected, setSelected] = useState(1)
+
+  useEffect(() => {
+    fetch("/api/content/pricing")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.plans && data.plans.length > 0) {
+          setPlans(data.plans)
+          // Select the popular one by default
+          const popularIndex = data.plans.findIndex((p: PricingPlan) => p.popular)
+          if (popularIndex !== -1) setSelected(popularIndex)
+        }
+      })
+      .catch(() => { })
+  }, [])
 
   return (
     <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#ffcd00" }}>
@@ -12,39 +61,37 @@ export default function PricingSection() {
         <p className="text-center text-lg mb-16 font-normal">Affordable subscription plans customised for you.</p>
 
         <div className="flex flex-col md:flex-row justify-center gap-8 items-end">
-          {/* Save without battery */}
-          <div
-            className="text-center rounded-3xl px-8 md:px-12 py-12 cursor-pointer hover:opacity-90 transition w-full md:w-80 transform md:scale-95"
-            style={{ backgroundColor: "#000000", color: "#ffcd00" }}
-            onClick={() => setSelected("save")}
-          >
-            <h3 className="text-3xl font-bold mb-2">Save</h3>
-            <p className="text-sm mb-4 opacity-90">without battery</p>
-            <p className="text-5xl font-bold mb-2">R1299</p>
-            <p className="text-sm opacity-90 mb-6">per month</p>
-            <p className="text-xs opacity-80">
-              For households spending
-              <br />
-              <span className="font-bold text-sm">R2000+</span> on electricity per month.
-            </p>
-          </div>
-
-          {/* Save & secure with battery */}
-          <div
-            className="text-center rounded-3xl px-8 md:px-12 py-12 cursor-pointer hover:opacity-90 transition w-full md:w-80 transform md:scale-110 shadow-lg"
-            style={{ backgroundColor: "#ffffff", color: "#000000" }}
-            onClick={() => setSelected("secure")}
-          >
-            <h3 className="text-3xl font-bold mb-2">Save & secure</h3>
-            <p className="text-sm mb-4 text-gray-600">with battery</p>
-            <p className="text-5xl font-bold mb-2">R1699</p>
-            <p className="text-sm text-gray-600 mb-6">per month</p>
-            <p className="text-xs text-gray-600">
-              For households spending
-              <br />
-              <span className="font-bold text-sm text-[#000000]">R3000+</span> on electricity per month.
-            </p>
-          </div>
+          {plans.map((plan, index) => (
+            <div
+              key={index}
+              className={`text-center rounded-3xl px-8 md:px-12 py-12 cursor-pointer hover:opacity-90 transition w-full md:w-80 transform ${plan.popular || selected === index ? "md:scale-110 shadow-lg" : "md:scale-95"
+                }`}
+              style={{
+                backgroundColor: plan.popular || selected === index ? "#ffffff" : "#000000",
+                color: plan.popular || selected === index ? "#000000" : "#ffcd00",
+              }}
+              onClick={() => setSelected(index)}
+            >
+              <h3 className="text-3xl font-bold mb-2">{plan.name}</h3>
+              {plan.subtitle && (
+                <p className={`text-sm mb-4 ${plan.popular || selected === index ? "text-gray-600" : "opacity-90"}`}>
+                  {plan.subtitle}
+                </p>
+              )}
+              <p className="text-5xl font-bold mb-2">{plan.price}</p>
+              <p className={`text-sm mb-6 ${plan.popular || selected === index ? "text-gray-600" : "opacity-90"}`}>
+                {plan.period}
+              </p>
+              {plan.features.map((feature, idx) => (
+                <p
+                  key={idx}
+                  className={`text-xs ${plan.popular || selected === index ? "text-gray-600" : "opacity-80"}`}
+                >
+                  {feature}
+                </p>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </section>

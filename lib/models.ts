@@ -1,37 +1,111 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
-// Site Content Schema (for hero, glow, sunny-side, footer, etc.)
+// Site Content Schema (for hero, glow, footer, pricing, etc.)
 export interface ISiteContent extends Document {
     _id: string
+    // Hero fields
     headline?: string
     subheadline?: string
     ctaText?: string
+    ctaLink?: string
     benefits?: string[]
+    backgroundColor?: string
+    textColor?: string
+    buttonColor?: string
+    buttonTextColor?: string
+    backgroundImage?: string
+    // Glow fields
     title?: string
     description?: string
+    highlightWord?: string
+    highlightColor?: string
+    image?: string
+    // Footer fields
+    phone?: string
+    email?: string
+    whatsapp?: string
+    tagline?: string
+    accentColor?: string
+    facebookUrl?: string
+    instagramUrl?: string
+    linkedinUrl?: string
+    twitterUrl?: string
+    // Pricing fields
+    plans?: Array<{
+        name: string
+        subtitle?: string
+        price: string
+        period: string
+        features: string[]
+        popular: boolean
+        ctaText: string
+        ctaLink: string
+    }>
+    style?: {
+        backgroundColor?: string
+        cardColor?: string
+        popularColor?: string
+        textColor?: string
+    }
+    // Generic
     features?: Array<{
         title: string
         subtitle: string
     }>
-    contactPhone?: string
-    contactEmail?: string
     updatedAt: Date
 }
 
 const SiteContentSchema = new Schema<ISiteContent>({
     _id: { type: String, required: true },
+    // Hero
     headline: String,
     subheadline: String,
     ctaText: String,
+    ctaLink: String,
     benefits: [String],
+    backgroundColor: String,
+    textColor: String,
+    buttonColor: String,
+    buttonTextColor: String,
+    backgroundImage: String,
+    // Glow
     title: String,
     description: String,
+    highlightWord: String,
+    highlightColor: String,
+    image: String,
+    // Footer
+    phone: String,
+    email: String,
+    whatsapp: String,
+    tagline: String,
+    accentColor: String,
+    facebookUrl: String,
+    instagramUrl: String,
+    linkedinUrl: String,
+    twitterUrl: String,
+    // Pricing
+    plans: [{
+        name: String,
+        subtitle: String,
+        price: String,
+        period: String,
+        features: [String],
+        popular: Boolean,
+        ctaText: String,
+        ctaLink: String
+    }],
+    style: {
+        backgroundColor: String,
+        cardColor: String,
+        popularColor: String,
+        textColor: String
+    },
+    // Generic
     features: [{
         title: String,
         subtitle: String
     }],
-    contactPhone: String,
-    contactEmail: String,
     updatedAt: { type: Date, default: Date.now }
 }, { _id: false })
 
@@ -55,6 +129,7 @@ export interface IBenefit extends Document {
     title: string
     subtitle: string
     iconType: string
+    iconImage?: string
     order: number
 }
 
@@ -62,54 +137,35 @@ const BenefitSchema = new Schema<IBenefit>({
     title: { type: String, required: true },
     subtitle: { type: String, required: true },
     iconType: { type: String, required: true },
-    order: { type: Number, default: 0 }
-})
-
-// Pricing Plan Schema
-export interface IPricingPlan extends Document {
-    name: string
-    price: string
-    features: string[]
-    isPopular: boolean
-    order: number
-}
-
-const PricingPlanSchema = new Schema<IPricingPlan>({
-    name: { type: String, required: true },
-    price: { type: String, required: true },
-    features: [String],
-    isPopular: { type: Boolean, default: false },
+    iconImage: String,
     order: { type: Number, default: 0 }
 })
 
 // Custom Section Schema
 export interface ICustomSection extends Document {
-    name: string
-    type: 'cards' | 'text-image' | 'banner' | 'list'
     title: string
-    subtitle?: string
-    backgroundColor: string
-    content: any[]
-    imageUrl?: string
+    content: string
+    image?: string
+    visible: boolean
     order: number
-    isActive: boolean
+    backgroundColor: string
+    textColor: string
+    layout: 'text-left' | 'text-right' | 'centered'
 }
 
 const CustomSectionSchema = new Schema<ICustomSection>({
-    name: { type: String, required: true },
-    type: { type: String, enum: ['cards', 'text-image', 'banner', 'list'], required: true },
     title: { type: String, required: true },
-    subtitle: String,
-    backgroundColor: { type: String, default: '#ffffff' },
-    content: { type: Schema.Types.Mixed, default: [] },
-    imageUrl: String,
+    content: { type: String, default: '' },
+    image: String,
+    visible: { type: Boolean, default: true },
     order: { type: Number, default: 0 },
-    isActive: { type: Boolean, default: true }
+    backgroundColor: { type: String, default: '#ffffff' },
+    textColor: { type: String, default: '#000000' },
+    layout: { type: String, enum: ['text-left', 'text-right', 'centered'], default: 'text-left' }
 })
 
 // Export models
 export const SiteContent = mongoose.models.SiteContent || mongoose.model<ISiteContent>('SiteContent', SiteContentSchema)
 export const FaqItem = mongoose.models.FaqItem || mongoose.model<IFaqItem>('FaqItem', FaqItemSchema)
 export const Benefit = mongoose.models.Benefit || mongoose.model<IBenefit>('Benefit', BenefitSchema)
-export const PricingPlan = mongoose.models.PricingPlan || mongoose.model<IPricingPlan>('PricingPlan', PricingPlanSchema)
 export const CustomSection = mongoose.models.CustomSection || mongoose.model<ICustomSection>('CustomSection', CustomSectionSchema)
