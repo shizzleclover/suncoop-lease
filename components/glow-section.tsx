@@ -1,6 +1,34 @@
 "use client"
 
+import { useState, useEffect } from "react"
+
+interface GlowContent {
+    title: string
+    description: string
+}
+
+const defaultContent: GlowContent = {
+    title: "Get that glow",
+    description: "With affordable, reliable and fully maintained home solar."
+}
+
 export default function GlowSection() {
+    const [content, setContent] = useState<GlowContent>(defaultContent)
+
+    useEffect(() => {
+        fetch("/api/content/glow")
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data) setContent({ ...defaultContent, ...data })
+            })
+            .catch(() => { })
+    }, [])
+
+    // Parse title for "glow" highlight
+    const titleParts = content.title.toLowerCase().includes("glow")
+        ? content.title.split(/glow/i)
+        : [content.title, ""]
+
     return (
         <section className="py-16 md:py-24 px-6 md:px-12 bg-white">
             <div className="max-w-6xl mx-auto">
@@ -8,13 +36,18 @@ export default function GlowSection() {
                     {/* Left side - Text content */}
                     <div className="order-1 md:order-1">
                         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
-                            Get that
-                            <br />
-                            <span style={{ color: "#ffcd00" }}>glow</span>
+                            {titleParts[0]}
+                            {content.title.toLowerCase().includes("glow") && (
+                                <>
+                                    <br />
+                                    <span style={{ color: "#ffcd00" }}>glow</span>
+                                </>
+                            )}
+                            {titleParts[1]}
                         </h2>
 
                         <p className="text-gray-600 text-base md:text-lg mb-6 max-w-md">
-                            With affordable, reliable and fully maintained home solar.
+                            {content.description}
                         </p>
 
                         <p className="text-gray-800 text-base md:text-lg font-medium">

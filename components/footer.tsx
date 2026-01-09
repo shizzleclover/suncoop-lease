@@ -1,10 +1,34 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
+interface FooterContent {
+  phone: string
+  email: string
+  whatsapp: string
+}
+
+const defaultContent: FooterContent = {
+  phone: "010 880 3948",
+  email: "help@suncoopng.co.za",
+  whatsapp: "27108803948"
+}
+
 export default function Footer() {
+  const [content, setContent] = useState<FooterContent>(defaultContent)
+
+  useEffect(() => {
+    fetch("/api/content/footer")
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setContent({ ...defaultContent, ...data })
+      })
+      .catch(() => { })
+  }, [])
+
   const handleInterest = () => {
-    window.location.href = "https://wa.me/27108803948"
+    window.location.href = `https://wa.me/${content.whatsapp}`
   }
 
   return (
@@ -126,13 +150,13 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Support</p>
-                <p className="text-white font-medium">010 880 3948</p>
+                <p className="text-white font-medium">{content.phone}</p>
                 <a
-                  href="mailto:help@suncoopng.co.za"
+                  href={`mailto:${content.email}`}
                   className="hover:opacity-80 transition-opacity"
                   style={{ color: "#ffcd00" }}
                 >
-                  help@suncoopng.co.za
+                  {content.email}
                 </a>
               </div>
             </div>

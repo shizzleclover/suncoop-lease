@@ -1,48 +1,44 @@
 "use client"
 
+import { useState, useEffect } from "react"
+
+interface Benefit {
+  _id?: string
+  icon: string
+  title: string
+  subtitle: string
+  iconType?: string
+  order?: number
+}
+
+const defaultBenefits: Benefit[] = [
+  { icon: "calendar", title: "No big upfront costs.", subtitle: "Just one simple monthly subscription." },
+  { icon: "flexibility", title: "Full flexibility.", subtitle: "Upgrade or cancel any time." },
+  { icon: "support", title: "24/7 on-call", subtitle: "support." },
+  { icon: "maintenance", title: "Maintenance", subtitle: "included." },
+  { icon: "monitor", title: "We monitor and manage your system", subtitle: "so you don't have to." },
+  { icon: "app", title: "Convenient real time app to track and manage", subtitle: "system performance." },
+  { icon: "power", title: "Uninterrupted", subtitle: "power." },
+  { icon: "install", title: "We install", subtitle: "within 2 weeks." }
+]
+
 export default function BenefitsSection() {
-  const benefits = [
-    {
-      icon: "calendar",
-      title: "No big upfront costs.",
-      subtitle: "Just one simple monthly subscription."
-    },
-    {
-      icon: "flexibility",
-      title: "Full flexibility.",
-      subtitle: "Upgrade or cancel any time."
-    },
-    {
-      icon: "support",
-      title: "24/7 on-call",
-      subtitle: "support."
-    },
-    {
-      icon: "maintenance",
-      title: "Maintenance",
-      subtitle: "included."
-    },
-    {
-      icon: "monitor",
-      title: "We monitor and manage your system",
-      subtitle: "so you don't have to."
-    },
-    {
-      icon: "app",
-      title: "Convenient real time app to track and manage",
-      subtitle: "system performance."
-    },
-    {
-      icon: "power",
-      title: "Uninterrupted",
-      subtitle: "power."
-    },
-    {
-      icon: "install",
-      title: "We install",
-      subtitle: "within 2 weeks."
-    }
-  ]
+  const [benefits, setBenefits] = useState<Benefit[]>(defaultBenefits)
+
+  useEffect(() => {
+    fetch("/api/benefits")
+      .then(res => res.ok ? res.json() : [])
+      .then((data: any[]) => {
+        if (data && data.length > 0) {
+          setBenefits(data.map(b => ({
+            icon: b.iconType || b.icon || "calendar",
+            title: b.title,
+            subtitle: b.subtitle
+          })))
+        }
+      })
+      .catch(() => { })
+  }, [])
 
   const renderIcon = (iconType: string) => {
     const iconSize = "w-full h-full p-4"
