@@ -39,7 +39,6 @@ export default function LivePreview({ children }: LivePreviewProps) {
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-gray-600">Preview</span>
                         </div>
-
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={() => setDevice('desktop')}
