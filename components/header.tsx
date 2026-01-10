@@ -57,7 +57,7 @@ export default function Header() {
   return (
     <>
       <header
-        className="text-black py-2.5 px-6 md:px-12 flex items-center justify-between fixed w-full top-0 z-40 transition-all duration-300 ease-in-out"
+        className="text-black py-5 px-6 md:px-12 flex items-center justify-between fixed w-full top-0 z-40 transition-all duration-300 ease-in-out"
         style={{
           backgroundColor: "#ffffff",
           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
@@ -67,9 +67,9 @@ export default function Header() {
         <Image
           src="/Arojin-Sunbox-Logo.png"
           alt="Sunbox Logo"
-          width={140}
-          height={40}
-          className="h-8 md:h-10 w-auto"
+          width={240}
+          height={70}
+          className="h-16 md:h-20 w-auto"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
           priority
         />
