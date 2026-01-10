@@ -115,13 +115,15 @@ export interface IFaqItem extends Document {
     question: string
     answer: string
     order: number
+    pageType: 'main' | 'flexpay'
 }
 
 const FaqItemSchema = new Schema<IFaqItem>({
     group: { type: String, required: true },
     question: { type: String, required: true },
     answer: { type: String, required: true },
-    order: { type: Number, default: 0 }
+    order: { type: Number, default: 0 },
+    pageType: { type: String, enum: ['main', 'flexpay'], default: 'main' }
 })
 
 // Benefit Schema
@@ -131,6 +133,7 @@ export interface IBenefit extends Document {
     iconType: string
     iconImage?: string
     order: number
+    pageType: 'main' | 'flexpay'
 }
 
 const BenefitSchema = new Schema<IBenefit>({
@@ -138,7 +141,8 @@ const BenefitSchema = new Schema<IBenefit>({
     subtitle: { type: String, required: true },
     iconType: { type: String, required: true },
     iconImage: String,
-    order: { type: Number, default: 0 }
+    order: { type: Number, default: 0 },
+    pageType: { type: String, enum: ['main', 'flexpay'], default: 'main' }
 })
 
 // Custom Section Schema

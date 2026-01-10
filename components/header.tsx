@@ -78,7 +78,7 @@ export default function Header() {
           <Link href="#flexgrid" className="hover:opacity-70 transition">
             FLEXGRID
           </Link>
-          <Link href="#flexpay" className="hover:opacity-70 transition">
+          <Link href="/flexpay" className="hover:opacity-70 transition">
             FLEXPAY
           </Link>
           <Link href="#installers" className="hover:opacity-70 transition">
@@ -138,7 +138,7 @@ export default function Header() {
             FLEXGRID
           </Link>
           <Link
-            href="#flexpay"
+            href="/flexpay"
             className="text-3xl font-extrabold hover:opacity-70 transition"
             onClick={() => setMobileMenuOpen(false)}
           >
