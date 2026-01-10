@@ -66,33 +66,12 @@ export default function Header() {
         <div className="text-2xl font-extrabold tracking-tight">suncoopng</div>
 
         <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:opacity-70 transition">
-              PRODUCTS <ChevronDown size={14} className="transition-transform duration-200 group-hover:rotate-180" />
-            </button>
-            {/* Dropdown Menu */}
-            <div className="absolute top-full left-0 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-in-out">
-              <div className="bg-white rounded-lg shadow-lg py-2 min-w-[160px] border border-gray-100">
-                <Link
-                  href="#residential"
-                  className="block px-4 py-2 text-sm font-semibold hover:bg-yellow-50 transition-colors"
-                >
-                  RESIDENTIAL
-                </Link>
-                <Link
-                  href="#commercial"
-                  className="block px-4 py-2 text-sm font-semibold hover:bg-yellow-50 transition-colors"
-                >
-                  COMMERCIAL
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:opacity-70 transition">
-              HOW IT WORKS <ChevronDown size={14} />
-            </button>
-          </div>
+          <Link href="#flexgrid" className="hover:opacity-70 transition">
+            FLEXGRID
+          </Link>
+          <Link href="#flexpay" className="hover:opacity-70 transition">
+            FLEXPAY
+          </Link>
           <Link href="#brain" className="hover:opacity-70 transition">
             THE BRAIN
           </Link>
@@ -143,18 +122,18 @@ export default function Header() {
         {/* Menu content */}
         <div className="flex flex-col items-center justify-center h-full gap-8">
           <Link
-            href="#products"
+            href="#flexgrid"
             className="text-3xl font-extrabold hover:opacity-70 transition"
             onClick={() => setMobileMenuOpen(false)}
           >
-            PRODUCTS
+            FLEXGRID
           </Link>
           <Link
-            href="#how-it-works"
+            href="#flexpay"
             className="text-3xl font-extrabold hover:opacity-70 transition"
             onClick={() => setMobileMenuOpen(false)}
           >
-            HOW IT WORKS
+            FLEXPAY
           </Link>
           <Link
             href="#brain"
