@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Check } from "lucide-react"
+import { Check, Zap, Sun } from "lucide-react"
 
 interface PricingPlan {
   name: string
@@ -22,7 +22,6 @@ export default function PricingSection() {
   const animationRef = useRef<number | null>(null)
   const [isPaused, setIsPaused] = useState(false)
 
-  // Check for mobile viewport
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
@@ -77,10 +76,10 @@ export default function PricingSection() {
 
   if (isLoading) {
     return (
-      <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#ffcd00" }}>
+      <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#f8f8f8" }}>
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-3">Select your power</h2>
-          <p className="text-lg">Loading plans...</p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-3 text-gray-900">Select your power</h2>
+          <p className="text-lg text-gray-500">Loading plans...</p>
         </div>
       </section>
     )
@@ -88,20 +87,18 @@ export default function PricingSection() {
 
   if (plans.length === 0) {
     return (
-      <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#ffcd00" }}>
+      <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#f8f8f8" }}>
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-3">Select your power</h2>
-          <p className="text-lg mb-8">Affordable subscription plans customised for you.</p>
-          <p className="text-gray-700">No pricing plans available. Add plans from the admin panel.</p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-3 text-gray-900">Select your power</h2>
+          <p className="text-lg mb-8 text-gray-500">Affordable subscription plans customised for you.</p>
+          <p className="text-gray-400">No pricing plans available. Add plans from the admin panel.</p>
         </div>
       </section>
     )
   }
 
-  // Duplicate plans for infinite scroll effect (desktop only)
   const duplicatedPlans = [...plans, ...plans]
 
-  // Render a single pricing card
   const renderCard = (plan: PricingPlan, index: number, isForMobile: boolean = false) => {
     const actualIndex = isForMobile ? index : index % plans.length
     const isHighlighted = plan.popular || selected === actualIndex
@@ -110,71 +107,56 @@ export default function PricingSection() {
       <div
         key={index}
         className={`
-          ${isForMobile
-            ? "w-full min-h-[80vh] flex flex-col justify-center"
-            : "flex-shrink-0 w-[320px]"
-          }
-          rounded-none border-2 p-6 cursor-pointer transition-all duration-300 ease-out relative
+          ${isForMobile ? "w-full" : "flex-shrink-0 w-[340px]"}
+          bg-white rounded-3xl p-6 md:p-8 cursor-pointer transition-all duration-300 ease-out relative
           ${isHighlighted
-            ? "shadow-xl z-10 border-white"
-            : "hover:shadow-lg border-black/20"
+            ? "ring-2 ring-yellow-400 shadow-2xl"
+            : "shadow-lg hover:shadow-xl"
           }
         `}
-        style={{
-          backgroundColor: isHighlighted ? "#ffffff" : "#000000",
-          color: isHighlighted ? "#000000" : "#ffcd00",
-        }}
         onClick={() => setSelected(actualIndex)}
       >
-        {/* Popular Badge */}
-        {plan.popular && (
-          <div
-            className="absolute left-1/2 transform -translate-x-1/2 bg-yellow-400 text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap shadow-md"
-            style={{ top: isForMobile ? '10px' : '-14px' }}
-          >
-            POPULAR
+        {/* Plan Header with Icon */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isHighlighted ? 'bg-yellow-400' : 'bg-gray-100'}`}>
+            <Sun size={24} className={isHighlighted ? 'text-black' : 'text-gray-600'} />
           </div>
-        )}
-
-        {/* Plan Name */}
-        <h3 className={`font-extrabold mb-2 ${isForMobile ? "text-3xl mt-8" : "text-4xl mt-2"}`}>
-          {plan.name}
-        </h3>
-
-        {/* Price */}
-        <p className={`font-black ${isForMobile ? "text-2xl" : "text-2xl"}`}>{plan.price}</p>
-        <p className={`text-sm font-semibold mb-4 ${isHighlighted ? "text-gray-600" : "opacity-90"}`}>
-          per month
-        </p>
-
-        {/* Connection Fee */}
-        <div className={`text-sm font-semibold mb-4 pb-4 border-b ${isHighlighted ? "border-gray-200 text-gray-700" : "border-yellow-400/30"}`}>
-          Connection Fee: <span className="font-extrabold">{plan.connectionFee}</span>
+          <h3 className="text-3xl font-bold text-gray-900">{plan.name}</h3>
         </div>
 
-        {/* Features */}
-        <div className="space-y-3">
-          <p className={`text-sm font-extrabold mb-3 ${isHighlighted ? "text-gray-800" : ""}`}>
-            Features
-          </p>
+        {/* Features List */}
+        <div className="space-y-4 mb-8">
           {plan.features.map((feature, idx) => (
-            <div key={idx} className="flex items-start gap-2">
-              <Check size={18} className={`flex-shrink-0 mt-0.5 ${isHighlighted ? "text-green-600" : "text-yellow-400"}`} strokeWidth={3} />
-              <p className={`text-sm font-medium ${isHighlighted ? "text-gray-700" : ""}`}>
-                {feature}
-              </p>
+            <div key={idx} className="flex items-start gap-3">
+              <Check size={18} className={isHighlighted ? "text-yellow-500" : "text-yellow-500"} strokeWidth={3} />
+              <p className="text-sm text-gray-600 leading-relaxed">{feature}</p>
             </div>
           ))}
+          {/* Connection Fee as a feature */}
+          <div className="flex items-start gap-3">
+            <Check size={18} className={isHighlighted ? "text-yellow-500" : "text-yellow-500"} strokeWidth={3} />
+            <p className="text-sm text-gray-600 leading-relaxed">
+              One-time setup: <span className="font-semibold">{plan.connectionFee}</span>
+            </p>
+          </div>
         </div>
 
-        {/* CTA Button */}
+        {/* Price Section */}
+        <div className="mb-6">
+          <span className={`text-2xl font-bold ${isHighlighted ? 'text-yellow-500' : 'text-gray-900'}`}>
+            {plan.price}
+          </span>
+          <p className="text-sm text-gray-400 mt-1">per month</p>
+        </div>
+
+        {/* CTA Button - Pill Shape */}
         {plan.ctaText && (
           <a
             href={plan.ctaLink || "#"}
             onClick={(e) => e.stopPropagation()}
-            className={`block mt-8 px-6 py-4 text-center font-bold text-base transition-all duration-300 ${isHighlighted
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-yellow-400 text-black hover:bg-yellow-300"
+            className={`block w-full py-3.5 text-center font-semibold text-sm rounded-full transition-all duration-200 ${isHighlighted
+              ? "bg-yellow-400 text-black hover:bg-yellow-500"
+              : "bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50"
               }`}
           >
             {plan.ctaText}
@@ -185,12 +167,14 @@ export default function PricingSection() {
   }
 
   return (
-    <section className="py-10 md:py-20" style={{ backgroundColor: "#ffcd00" }}>
+    <section className="py-16 md:py-24" style={{ backgroundColor: "#f8f8f8" }}>
       <div className="max-w-7xl mx-auto px-4 md:px-12">
-        <h2 className="text-3xl md:text-5xl font-bold text-center mb-3">Select your power</h2>
-        <p className="text-center text-base md:text-lg mb-8 md:mb-12 font-normal">
-          Affordable subscription plans customised for you.
-        </p>
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Select your power</h2>
+          <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+            Affordable subscription plans customised for your energy needs.
+          </p>
+        </div>
       </div>
 
       {/* Mobile: Vertical scroll layout */}
@@ -208,7 +192,7 @@ export default function PricingSection() {
       >
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 pt-6 pb-4 px-4"
+          className="flex gap-6 pt-4 pb-4 px-8"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
