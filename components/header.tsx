@@ -59,7 +59,7 @@ export default function Header() {
       <header
         className="text-black py-2.5 px-6 md:px-12 flex items-center justify-between fixed w-full top-0 z-40 transition-all duration-300 ease-in-out"
         style={{
-          backgroundColor: isScrolled ? "#ffffff" : "#ffcd00",
+          backgroundColor: "#ffffff",
           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           transform: isVisible ? "translateY(0)" : "translateY(-100%)"
         }}
