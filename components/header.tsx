@@ -3,16 +3,51 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X } from "lucide-react"
+
+interface NavItem {
+  label: string
+  href: string
+}
+
+interface HeaderContent {
+  logoUrl: string
+  navItems: NavItem[]
+  ctaButtonText: string
+  whatsappNumber: string
+}
+
+const defaultContent: HeaderContent = {
+  logoUrl: "/suncoopng-logo.png",
+  navItems: [
+    { label: "FLEXGRID", href: "/" },
+    { label: "FLEXPAY", href: "/flexpay" },
+    { label: "INSTALLERS", href: "#installers" },
+    { label: "CONTACT", href: "#contact" },
+    { label: "I'M INTERESTED", href: "#interested" },
+  ],
+  ctaButtonText: "I'M INTERESTED",
+  whatsappNumber: "27108803948",
+}
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [content, setContent] = useState<HeaderContent>(defaultContent)
   const lastScrollY = useRef(0)
 
+  useEffect(() => {
+    fetch("/api/content/header")
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setContent({ ...defaultContent, ...data })
+      })
+      .catch(() => { })
+  }, [])
+
   const handleInterest = () => {
-    window.location.href = "https://wa.me/27108803948"
+    window.location.href = `https://wa.me/${content.whatsappNumber}`
   }
 
   // Scroll detection for navbar color change and hide/show
@@ -57,124 +92,92 @@ export default function Header() {
   return (
     <>
       <header
-        className="text-black py-5 px-6 md:px-12 flex items-center justify-between fixed w-full top-0 z-40 transition-all duration-300 ease-in-out"
-        style={{
-          backgroundColor: "#ffffff",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          transform: isVisible ? "translateY(0)" : "translateY(-100%)"
-        }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-white text-black shadow-md"
+          : "bg-transparent text-black"
+          } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
       >
-        <Image
-          src="/Arojin-Sunbox-Logo.png"
-          alt="Sunbox Logo"
-          width={240}
-          height={70}
-          className="h-16 md:h-20 w-auto"
-          style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
-          priority
-        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src={content.logoUrl || "/suncoopng-logo.png"}
+              alt="Suncoopng"
+              width={240}
+              height={70}
+              className="h-16 md:h-20 w-auto"
+              style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
+              priority
+            />
+          </Link>
 
-        <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
-          <Link href="/" className="hover:opacity-70 transition">
-            FLEXGRID
-          </Link>
-          <Link href="/flexpay" className="hover:opacity-70 transition">
-            FLEXPAY
-          </Link>
-          <Link href="#installers" className="hover:opacity-70 transition">
-            INSTALLERS
-          </Link>
-          <Link href="#contact" className="hover:opacity-70 transition">
-            CONTACT
-          </Link>
-          <Link href="#interested" className="hover:opacity-70 transition">
-            I'M INTERESTED
-          </Link>
-        </nav>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
+            {content.navItems.map((item, idx) => (
+              <Link key={idx} href={item.href} className="hover:opacity-70 transition">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Desktop CTA Button */}
-        <button
-          onClick={handleInterest}
-          className="hidden md:block text-white px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: "#000000" }}
-        >
-          I'M INTERESTED
-        </button>
+          {/* Desktop CTA Button */}
+          <button
+            onClick={handleInterest}
+            className="hidden md:block text-white px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: "#000000" }}
+          >
+            {content.ctaButtonText}
+          </button>
 
-        {/* Mobile hamburger button */}
-        <button
-          className="md:hidden p-2"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X size={28} strokeWidth={2.5} /> : <Menu size={28} strokeWidth={2.5} />}
-        </button>
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 hover:opacity-70 transition"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
       </header>
 
-      {/* Full-screen mobile menu overlay */}
+      {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 z-50 md:hidden transition-all duration-500 ${mobileMenuOpen
-          ? 'opacity-100 pointer-events-auto'
-          : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-40 transition-all duration-300 md:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
         style={{ backgroundColor: "#ffcd00" }}
       >
         {/* Close button */}
         <button
-          className="absolute top-4 right-6 p-2"
           onClick={() => setMobileMenuOpen(false)}
+          className="absolute top-4 right-4 p-2 hover:opacity-70 transition"
           aria-label="Close menu"
         >
-          <X size={32} strokeWidth={2.5} />
+          <X size={32} />
         </button>
 
         {/* Menu content */}
         <div className="flex flex-col items-center justify-center h-full gap-8">
-          <Link
-            href="/"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            FLEXGRID
-          </Link>
-          <Link
-            href="/flexpay"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            FLEXPAY
-          </Link>
-          <Link
-            href="#installers"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            INSTALLERS
-          </Link>
-          <Link
-            href="#contact"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            CONTACT
-          </Link>
-          <Link
-            href="#interested"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            I'M INTERESTED
-          </Link>
+          {content.navItems.map((item, idx) => (
+            <Link
+              key={idx}
+              href={item.href}
+              className="text-3xl font-extrabold hover:opacity-70 transition"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
 
+          {/* Mobile CTA Button */}
           <button
             onClick={() => {
               setMobileMenuOpen(false)
               handleInterest()
             }}
-            className="mt-8 text-white px-10 py-4 rounded-full font-bold text-xl hover:opacity-90 transition-opacity"
+            className="mt-4 text-white px-8 py-3 rounded-full font-bold text-lg hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "#000000" }}
           >
-            I'M INTERESTED
+            {content.ctaButtonText}
           </button>
         </div>
       </div>

@@ -6,19 +6,25 @@ import Link from "next/link"
 import {
     Menu, X, LayoutDashboard, Home, Sparkles, Star,
     HelpCircle, DollarSign, FileText, PlusSquare,
-    LogOut, ExternalLink, ChevronLeft, ChevronRight, CreditCard
+    LogOut, ExternalLink, ChevronLeft, ChevronRight, CreditCard,
+    Megaphone, MapPin, Sun, Settings, Navigation2
 } from "lucide-react"
 
 const navItems = [
     { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
+    { href: "/admin/header", label: "Header / Nav", Icon: Navigation2 },
     { href: "/admin/hero", label: "Hero Section", Icon: Home },
     { href: "/admin/glow", label: "Glow Section", Icon: Sparkles },
     { href: "/admin/benefits", label: "Benefits", Icon: Star },
+    { href: "/admin/sunny-side", label: "Sunny Side", Icon: Sun },
+    { href: "/admin/journey", label: "Sign Up Journey", Icon: MapPin },
+    { href: "/admin/cta-banner", label: "CTA Banner", Icon: Megaphone },
     { href: "/admin/faq", label: "FAQ", Icon: HelpCircle },
     { href: "/admin/pricing", label: "Pricing", Icon: DollarSign },
     { href: "/admin/footer", label: "Footer", Icon: FileText },
     { href: "/admin/sections", label: "Custom Sections", Icon: PlusSquare },
     { href: "/admin/flexpay", label: "Flexpay CMS", Icon: CreditCard },
+    { href: "/admin/settings", label: "Site Settings", Icon: Settings },
 ]
 
 export default function AdminLayout({
