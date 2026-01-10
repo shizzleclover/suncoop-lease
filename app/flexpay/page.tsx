@@ -2,28 +2,28 @@
 
 import { MessageCircle } from "lucide-react"
 import Header from "@/components/header"
-import HeroSection from "@/components/hero-section"
-import GlowSection from "@/components/glow-section"
+import FlexpayHeroSection from "@/components/flexpay/hero-section"
+import FlexpayGlowSection from "@/components/flexpay/glow-section"
 import SunnySideSection from "@/components/sunny-side-section"
-import BenefitsSection from "@/components/benefits-section"
-import PricingSection from "@/components/pricing-section"
+import FlexpayBenefitsSection from "@/components/flexpay/benefits-section"
+import FlexpayPricingSection from "@/components/flexpay/pricing-section"
 import SignUpJourney from "@/components/sign-up-journey"
 import CtaBanner from "@/components/cta-banner"
-import FaqSection from "@/components/faq-section"
+import FlexpayFaqSection from "@/components/flexpay/faq-section"
 import Footer from "@/components/footer"
 
 export default function FlexpayPage() {
     return (
         <main className="w-full">
             <Header />
-            <HeroSection />
-            <GlowSection />
+            <FlexpayHeroSection />
+            <FlexpayGlowSection />
             <SunnySideSection />
-            <BenefitsSection />
-            <PricingSection />
+            <FlexpayBenefitsSection />
+            <FlexpayPricingSection />
             <SignUpJourney />
             <CtaBanner />
-            <FaqSection />
+            <FlexpayFaqSection />
             <Footer />
 
             {/* WhatsApp Button */}

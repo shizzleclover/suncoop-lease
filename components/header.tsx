@@ -75,7 +75,7 @@ export default function Header() {
         />
 
         <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
-          <Link href="#flexgrid" className="hover:opacity-70 transition">
+          <Link href="/" className="hover:opacity-70 transition">
             FLEXGRID
           </Link>
           <Link href="/flexpay" className="hover:opacity-70 transition">
@@ -131,7 +131,7 @@ export default function Header() {
         {/* Menu content */}
         <div className="flex flex-col items-center justify-center h-full gap-8">
           <Link
-            href="#flexgrid"
+            href="/"
             className="text-3xl font-extrabold hover:opacity-70 transition"
             onClick={() => setMobileMenuOpen(false)}
           >

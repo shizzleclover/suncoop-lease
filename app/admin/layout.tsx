@@ -6,7 +6,7 @@ import Link from "next/link"
 import {
     Menu, X, LayoutDashboard, Home, Sparkles, Star,
     HelpCircle, DollarSign, FileText, PlusSquare,
-    LogOut, ExternalLink, ChevronLeft, ChevronRight
+    LogOut, ExternalLink, ChevronLeft, ChevronRight, CreditCard
 } from "lucide-react"
 
 const navItems = [
@@ -18,6 +18,7 @@ const navItems = [
     { href: "/admin/pricing", label: "Pricing", Icon: DollarSign },
     { href: "/admin/footer", label: "Footer", Icon: FileText },
     { href: "/admin/sections", label: "Custom Sections", Icon: PlusSquare },
+    { href: "/admin/flexpay", label: "Flexpay CMS", Icon: CreditCard },
 ]
 
 export default function AdminLayout({
@@ -145,8 +146,8 @@ export default function AdminLayout({
                                         key={item.href}
                                         href={item.href}
                                         className={`flex items-center gap-3 px-3 py-2 rounded transition-colors ${pathname === item.href
-                                                ? 'bg-yellow-500 text-black'
-                                                : 'hover:bg-gray-800'
+                                            ? 'bg-yellow-500 text-black'
+                                            : 'hover:bg-gray-800'
                                             }`}
                                     >
                                         <IconComponent size={20} />
