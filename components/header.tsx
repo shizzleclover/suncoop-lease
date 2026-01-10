@@ -72,14 +72,14 @@ export default function Header() {
           <Link href="#flexpay" className="hover:opacity-70 transition">
             FLEXPAY
           </Link>
-          <Link href="#brain" className="hover:opacity-70 transition">
-            THE BRAIN
-          </Link>
           <Link href="#installers" className="hover:opacity-70 transition">
             INSTALLERS
           </Link>
           <Link href="#contact" className="hover:opacity-70 transition">
             CONTACT
+          </Link>
+          <Link href="#interested" className="hover:opacity-70 transition">
+            I'M INTERESTED
           </Link>
         </nav>
 
@@ -136,13 +136,6 @@ export default function Header() {
             FLEXPAY
           </Link>
           <Link
-            href="#brain"
-            className="text-3xl font-extrabold hover:opacity-70 transition"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            THE BRAIN
-          </Link>
-          <Link
             href="#installers"
             className="text-3xl font-extrabold hover:opacity-70 transition"
             onClick={() => setMobileMenuOpen(false)}
@@ -155,6 +148,13 @@ export default function Header() {
             onClick={() => setMobileMenuOpen(false)}
           >
             CONTACT
+          </Link>
+          <Link
+            href="#interested"
+            className="text-3xl font-extrabold hover:opacity-70 transition"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            I'M INTERESTED
           </Link>
 
           <button
