@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
 import { Menu, X, ChevronDown } from "lucide-react"
 
@@ -63,7 +64,15 @@ export default function Header() {
           transform: isVisible ? "translateY(0)" : "translateY(-100%)"
         }}
       >
-        <div className="text-2xl font-extrabold tracking-tight">suncoopng</div>
+        <Image
+          src="/Arojin-Sunbox-Logo.png"
+          alt="Sunbox Logo"
+          width={140}
+          height={40}
+          className="h-8 md:h-10 w-auto"
+          style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
+          priority
+        />
 
         <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
           <Link href="#flexgrid" className="hover:opacity-70 transition">
