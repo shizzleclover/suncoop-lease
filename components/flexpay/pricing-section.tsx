@@ -1,34 +1,51 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Check, Zap, Sun } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Sun, Zap, Battery, Home, Cpu, Rocket, Check, CreditCard, Calendar } from "lucide-react"
+
+interface Specification {
+    label: string
+    value: string
+}
 
 interface PricingPlan {
     name: string
     category: string
     price: string
-    connectionFee: string
+    specifications: Specification[]
     features: string[]
+    flexpay: {
+        downpayment: string
+        installment: string
+        duration: string
+    }
     popular: boolean
     ctaText: string
     ctaLink: string
 }
 
+interface Category {
+    name: string
+    description: string
+}
+
+const categoryIcons: { [key: string]: any } = {
+    "Home Series": Home,
+    "Mini": Zap,
+    "Pro": Cpu,
+    "Max": Rocket,
+}
+
+const specIcons: { [key: string]: any } = {
+    "Solar Panel": Sun,
+    "Inverter": Zap,
+    "Battery": Battery,
+}
+
 export default function FlexpayPricingSection() {
     const [plans, setPlans] = useState<PricingPlan[]>([])
-    const [selected, setSelected] = useState(0)
+    const [categories, setCategories] = useState<Category[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isMobile, setIsMobile] = useState(false)
-    const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const animationRef = useRef<number | null>(null)
-    const [isPaused, setIsPaused] = useState(false)
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768)
-        checkMobile()
-        window.addEventListener('resize', checkMobile)
-        return () => window.removeEventListener('resize', checkMobile)
-    }, [])
 
     useEffect(() => {
         fetch("/api/content/flexpay-pricing")
@@ -36,48 +53,18 @@ export default function FlexpayPricingSection() {
             .then((data) => {
                 if (data?.plans && data.plans.length > 0) {
                     setPlans(data.plans)
-                    const popularIndex = data.plans.findIndex((p: PricingPlan) => p.popular)
-                    if (popularIndex !== -1) setSelected(popularIndex)
+                }
+                if (data?.categories && data.categories.length > 0) {
+                    setCategories(data.categories)
                 }
             })
             .catch(() => { })
             .finally(() => setIsLoading(false))
     }, [])
 
-    // Infinite scroll animation - only on desktop
-    useEffect(() => {
-        if (plans.length <= 1 || isMobile) return
-
-        const container = scrollContainerRef.current
-        if (!container) return
-
-        let scrollPosition = 0
-        const scrollSpeed = 0.5
-
-        const animate = () => {
-            if (!isPaused && container) {
-                scrollPosition += scrollSpeed
-                const singleSetWidth = container.scrollWidth / 2
-                if (scrollPosition >= singleSetWidth) {
-                    scrollPosition = 0
-                }
-                container.scrollLeft = scrollPosition
-            }
-            animationRef.current = requestAnimationFrame(animate)
-        }
-
-        animationRef.current = requestAnimationFrame(animate)
-
-        return () => {
-            if (animationRef.current) {
-                cancelAnimationFrame(animationRef.current)
-            }
-        }
-    }, [plans.length, isPaused, isMobile])
-
     if (isLoading) {
         return (
-            <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#f8f8f8" }}>
+            <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-7xl mx-auto text-center">
                     <h2 className="text-4xl md:text-5xl font-bold mb-3 text-gray-900">Select your power</h2>
                     <p className="text-lg text-gray-500">Loading plans...</p>
@@ -88,7 +75,7 @@ export default function FlexpayPricingSection() {
 
     if (plans.length === 0) {
         return (
-            <section className="py-20 px-6 md:px-12" style={{ backgroundColor: "#f8f8f8" }}>
+            <section className="py-20 px-6 md:px-12 bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-7xl mx-auto text-center">
                     <h2 className="text-4xl md:text-5xl font-bold mb-3 text-gray-900">Select your power</h2>
                     <p className="text-lg mb-8 text-gray-500">Affordable subscription plans customised for you.</p>
@@ -98,118 +85,183 @@ export default function FlexpayPricingSection() {
         )
     }
 
-    const duplicatedPlans = [...plans, ...plans]
+    // Group plans by category - use categories from state or extract from plans
+    const categoryNames = (categories.length > 0
+        ? categories.map(c => c.name)
+        : [...new Set(plans.map(p => p.category))]
+    ).filter(Boolean) as string[]
 
-    const renderCard = (plan: PricingPlan, index: number, isForMobile: boolean = false) => {
-        const actualIndex = isForMobile ? index : index % plans.length
-        const isHighlighted = plan.popular || selected === actualIndex
+    const plansByCategory: { [key: string]: PricingPlan[] } = {}
+
+    categoryNames.forEach(cat => {
+        if (cat) plansByCategory[cat] = plans.filter(p => p.category === cat)
+    })
+
+    const activeCategories = categoryNames.filter(cat => cat && plansByCategory[cat]?.length > 0)
+
+    const renderCard = (plan: PricingPlan) => {
+        const isPopular = plan.popular
 
         return (
             <div
-                key={index}
                 className={`
-          ${isForMobile ? "w-full" : "flex-shrink-0 w-[340px]"}
-          bg-white rounded-3xl p-6 md:p-8 cursor-pointer transition-all duration-300 ease-out relative
-          ${isHighlighted
+                    bg-white rounded-3xl overflow-hidden transition-all duration-300 ease-out relative
+                    ${isPopular
                         ? "ring-2 ring-yellow-400 shadow-2xl"
                         : "shadow-lg hover:shadow-xl"
                     }
-        `}
-                onClick={() => setSelected(actualIndex)}
+                `}
             >
-                {/* Category Badge */}
-                {plan.category && (
-                    <div className="mb-4">
-                        <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full ${isHighlighted ? 'bg-yellow-400 text-black' : 'bg-gray-100 text-gray-600'}`}>
-                            {plan.category}
-                        </span>
+                {/* Popular Badge */}
+                {isPopular && (
+                    <div className="bg-yellow-400 text-center py-2">
+                        <span className="text-black text-xs font-bold uppercase tracking-wide">Most Popular</span>
                     </div>
                 )}
 
-                {/* Plan Header with Icon */}
-                <div className="flex items-center gap-3 mb-6">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isHighlighted ? 'bg-yellow-400' : 'bg-gray-100'}`}>
-                        <Sun size={24} className={isHighlighted ? 'text-black' : 'text-gray-600'} />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-                </div>
-
-                {/* Features List */}
-                <div className="space-y-4 mb-8">
-                    {plan.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-start gap-3">
-                            <Check size={18} className={isHighlighted ? "text-yellow-500" : "text-yellow-500"} strokeWidth={3} />
-                            <p className="text-sm text-gray-600 leading-relaxed">{feature}</p>
+                <div className="p-6 md:p-8">
+                    {/* System Name & Price */}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center">
+                                <Sun size={20} className="text-black" />
+                            </div>
+                            <h4 className="text-xl font-bold text-gray-900">{plan.name}</h4>
                         </div>
-                    ))}
-                    {/* Connection Fee as a feature */}
-                    <div className="flex items-start gap-3">
-                        <Check size={18} className={isHighlighted ? "text-yellow-500" : "text-yellow-500"} strokeWidth={3} />
-                        <p className="text-sm text-gray-600 leading-relaxed">
-                            One-time setup: <span className="font-semibold">{plan.connectionFee}</span>
-                        </p>
+                        <div className="mt-4">
+                            <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
+                        </div>
                     </div>
-                </div>
 
-                {/* Price Section */}
-                <div className="mb-6">
-                    <span className={`text-2xl font-bold ${isHighlighted ? 'text-yellow-500' : 'text-gray-900'}`}>
-                        {plan.price}
-                    </span>
-                    <p className="text-sm text-gray-400 mt-1">per month</p>
-                </div>
+                    {/* Divider */}
+                    <div className="border-t border-gray-100 my-6"></div>
 
-                {/* CTA Button - Pill Shape */}
-                {plan.ctaText && (
-                    <a
-                        href={plan.ctaLink || "#"}
-                        onClick={(e) => e.stopPropagation()}
-                        className={`block w-full py-3.5 text-center font-semibold text-sm rounded-full transition-all duration-200 ${isHighlighted
-                            ? "bg-yellow-400 text-black hover:bg-yellow-500"
-                            : "bg-transparent border-2 border-yellow-400 text-yellow-600 hover:bg-yellow-50"
-                            }`}
-                    >
-                        {plan.ctaText}
-                    </a>
-                )}
+                    {/* Specifications */}
+                    <div className="mb-6">
+                        <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Specifications</h5>
+                        <div className="space-y-3">
+                            {plan.specifications?.map((spec, idx) => {
+                                const SpecIcon = specIcons[spec.label] || Sun
+                                return (
+                                    <div key={idx} className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-yellow-50 flex items-center justify-center">
+                                            <SpecIcon size={16} className="text-yellow-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-400">{spec.label}</p>
+                                            <p className="text-sm font-medium text-gray-700">{spec.value}</p>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Features */}
+                    {plan.features && plan.features.length > 0 && (
+                        <div className="mb-6">
+                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Features</h5>
+                            <div className="space-y-2">
+                                {plan.features.map((feature, idx) => (
+                                    <div key={idx} className="flex items-start gap-2">
+                                        <Check size={14} className="text-green-500 mt-0.5 flex-shrink-0" strokeWidth={3} />
+                                        <p className="text-sm text-gray-600">{feature}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Flexpay Details */}
+                    {plan.flexpay && (
+                        <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-4 mb-6">
+                            <div className="flex items-center gap-2 mb-3">
+                                <CreditCard size={16} className="text-yellow-600" />
+                                <h5 className="text-sm font-bold text-gray-800">Flexpay Option</h5>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <p className="text-gray-500 text-xs">Downpayment</p>
+                                    <p className="font-semibold text-gray-800">{plan.flexpay.downpayment}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500 text-xs">Installment</p>
+                                    <p className="font-semibold text-gray-800">{plan.flexpay.installment}</p>
+                                </div>
+                                <div className="col-span-2 flex items-center gap-2 pt-2 border-t border-yellow-200">
+                                    <Calendar size={14} className="text-yellow-600" />
+                                    <p className="text-gray-600">Duration: <span className="font-semibold">{plan.flexpay.duration}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* CTA Button */}
+                    {plan.ctaText && (
+                        <a
+                            href={plan.ctaLink || "#"}
+                            className={`block w-full py-4 text-center font-bold text-sm rounded-full transition-all duration-200 ${isPopular
+                                ? "bg-yellow-400 text-black hover:bg-yellow-500"
+                                : "bg-gray-900 text-white hover:bg-gray-800"
+                                }`}
+                        >
+                            {plan.ctaText}
+                        </a>
+                    )}
+                </div>
             </div>
         )
     }
 
     return (
-        <section className="py-16 md:py-24" style={{ backgroundColor: "#f8f8f8" }}>
+        <section className="py-16 md:py-24 bg-gradient-to-b from-gray-50 to-white">
             <div className="max-w-7xl mx-auto px-4 md:px-12">
-                <div className="text-center mb-12 md:mb-16">
+                {/* Main Header */}
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-400 mb-6">
+                        <Sun size={32} className="text-black" />
+                    </div>
                     <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Select your power</h2>
                     <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-                        Affordable subscription plans customised for your energy needs.
+                        Choose from our range of solar packages with flexible payment options.
                     </p>
                 </div>
-            </div>
 
-            {/* Mobile: Vertical scroll layout */}
-            <div className="md:hidden px-4">
-                <div className="flex flex-col gap-6">
-                    {plans.map((plan, index) => renderCard(plan, index, true))}
-                </div>
-            </div>
+                {/* Category Sections */}
+                <div className="space-y-24">
+                    {activeCategories.map((categoryName) => {
+                        const Icon = categoryIcons[categoryName] || Sun
+                        const categoryPlans = plansByCategory[categoryName]
+                        const categoryData = categories.find(c => c.name === categoryName)
+                        const description = categoryData?.description || ""
 
-            {/* Desktop: Horizontal infinite carousel */}
-            <div
-                className="hidden md:block relative overflow-hidden"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-            >
-                <div
-                    ref={scrollContainerRef}
-                    className="flex gap-6 pt-4 pb-4 px-8"
-                    style={{
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                        overflow: 'hidden',
-                    }}
-                >
-                    {duplicatedPlans.map((plan, index) => renderCard(plan, index, false))}
+                        return (
+                            <div key={categoryName} className="scroll-mt-24" id={categoryName.toLowerCase().replace(' ', '-')}>
+                                {/* Category Header */}
+                                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-10">
+                                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 flex items-center justify-center shadow-lg">
+                                        <Icon size={32} className="text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-2xl md:text-4xl font-bold text-gray-900">{categoryName}</h3>
+                                        <p className="text-gray-500 mt-1">{description}</p>
+                                    </div>
+                                </div>
+
+                                {/* Plans Grid */}
+                                <div className={`grid gap-8 ${categoryPlans.length === 1 ? 'grid-cols-1 max-w-lg' :
+                                    categoryPlans.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl' :
+                                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                                    }`}>
+                                    {categoryPlans.map((plan, idx) => (
+                                        <div key={idx}>
+                                            {renderCard(plan)}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </section>
