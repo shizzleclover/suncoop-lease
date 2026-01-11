@@ -3,7 +3,6 @@
 import { MessageCircle } from "lucide-react"
 import Header from "@/components/header"
 import FlexpayHeroSection from "@/components/flexpay/hero-section"
-import FlexpayGlowSection from "@/components/flexpay/glow-section"
 import SunnySideSection from "@/components/sunny-side-section"
 import FlexpayBenefitsSection from "@/components/flexpay/benefits-section"
 import FlexpayPricingSection from "@/components/flexpay/pricing-section"
@@ -17,7 +16,6 @@ export default function FlexpayPage() {
         <main className="w-full">
             <Header />
             <FlexpayHeroSection />
-            <FlexpayGlowSection />
             <SunnySideSection />
             <FlexpayBenefitsSection />
             <FlexpayPricingSection />

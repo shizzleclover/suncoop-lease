@@ -6,6 +6,7 @@ import ColorPicker from "@/components/admin/color-picker"
 
 interface PricingPlan {
     name: string
+    category: string
     price: string
     connectionFee: string
     features: string[]
@@ -14,12 +15,45 @@ interface PricingPlan {
     ctaLink: string
 }
 
+const categoryOptions = ["Home Series", "Mini", "Pro", "Max"]
+
 const defaultPlans: PricingPlan[] = [
     {
-        name: "Flexpay Basic",
-        price: "N400,000",
-        connectionFee: "N2.5m",
-        features: ["Basic solar setup", "Standard monitoring", "Email support"],
+        name: "Home Basic",
+        category: "Home Series",
+        price: "₦50,000",
+        connectionFee: "₦150,000",
+        features: ["1.5kVA Inverter", "2x 200Ah Batteries", "4x Solar Panels", "Basic Installation"],
+        popular: false,
+        ctaText: "Get Started",
+        ctaLink: "https://wa.me/27108803948",
+    },
+    {
+        name: "Mini Power",
+        category: "Mini",
+        price: "₦35,000",
+        connectionFee: "₦100,000",
+        features: ["1kVA Inverter", "1x 200Ah Battery", "2x Solar Panels", "Compact Setup"],
+        popular: false,
+        ctaText: "Get Started",
+        ctaLink: "https://wa.me/27108803948",
+    },
+    {
+        name: "Pro Power",
+        category: "Pro",
+        price: "₦85,000",
+        connectionFee: "₦250,000",
+        features: ["3.5kVA Inverter", "4x 200Ah Batteries", "8x Solar Panels", "Premium Installation", "Priority Support"],
+        popular: true,
+        ctaText: "Get Started",
+        ctaLink: "https://wa.me/27108803948",
+    },
+    {
+        name: "Max Power",
+        category: "Max",
+        price: "₦150,000",
+        connectionFee: "₦400,000",
+        features: ["5kVA Inverter", "8x 200Ah Batteries", "12x Solar Panels", "Full Home Coverage", "24/7 Support", "Extended Warranty"],
         popular: false,
         ctaText: "Get Started",
         ctaLink: "https://wa.me/27108803948",
@@ -71,9 +105,10 @@ export default function FlexpayPricingEditor() {
 
     const addPlan = () => {
         setPlans([...plans, {
-            name: `Flexpay Plan ${plans.length + 1}`,
-            price: "N0",
-            connectionFee: "N0",
+            name: `New Plan ${plans.length + 1}`,
+            category: "Home Series",
+            price: "₦0",
+            connectionFee: "₦0",
             features: ["Feature 1"],
             popular: false,
             ctaText: "Get Started",
@@ -181,10 +216,18 @@ export default function FlexpayPricingEditor() {
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
                                     <input type="text" value={currentPlan.name} onChange={(e) => updatePlan(selectedPlan, { name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <select value={currentPlan.category || "Home Series"} onChange={(e) => updatePlan(selectedPlan, { category: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                        {categoryOptions.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Price</label>

@@ -5,6 +5,7 @@ import { Check, Zap, Sun } from "lucide-react"
 
 interface PricingPlan {
     name: string
+    category: string
     price: string
     connectionFee: string
     features: string[]
@@ -116,12 +117,21 @@ export default function FlexpayPricingSection() {
         `}
                 onClick={() => setSelected(actualIndex)}
             >
+                {/* Category Badge */}
+                {plan.category && (
+                    <div className="mb-4">
+                        <span className={`inline-block px-3 py-1 text-xs font-bold rounded-full ${isHighlighted ? 'bg-yellow-400 text-black' : 'bg-gray-100 text-gray-600'}`}>
+                            {plan.category}
+                        </span>
+                    </div>
+                )}
+
                 {/* Plan Header with Icon */}
                 <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isHighlighted ? 'bg-yellow-400' : 'bg-gray-100'}`}>
                         <Sun size={24} className={isHighlighted ? 'text-black' : 'text-gray-600'} />
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900">{plan.name}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
                 </div>
 
                 {/* Features List */}
