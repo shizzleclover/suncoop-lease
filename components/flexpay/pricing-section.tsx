@@ -52,10 +52,17 @@ export default function FlexpayPricingSection() {
             .then((res) => (res.ok ? res.json() : null))
             .then((data) => {
                 console.log("[FlexpayPricing] API Response:", data)
-                console.log("[FlexpayPricing] Plans:", data?.plans)
-                console.log("[FlexpayPricing] Categories:", data?.categories)
                 if (data?.plans && data.plans.length > 0) {
-                    setPlans(data.plans)
+                    // Normalize plans to ensure they have category
+                    const normalizedPlans = data.plans.map((plan: Partial<PricingPlan>) => ({
+                        ...plan,
+                        category: plan.category || "Home Series",
+                        specifications: plan.specifications || [],
+                        features: plan.features || [],
+                        flexpay: plan.flexpay || { downpayment: "", installment: "", duration: "" }
+                    })) as PricingPlan[]
+                    console.log("[FlexpayPricing] Normalized Plans:", normalizedPlans)
+                    setPlans(normalizedPlans)
                 }
                 if (data?.categories && data.categories.length > 0) {
                     setCategories(data.categories)

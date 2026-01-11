@@ -51,21 +51,34 @@ export default function FlexpayBenefitsEditor() {
         setIsSaving(true)
         setMessage("")
         try {
+            // Save each benefit and track new IDs
+            const savedBenefits: Benefit[] = []
             for (const benefit of benefits) {
                 if (benefit._id) {
+                    // Update existing benefit
                     await fetch(`/api/flexpay/benefits/${benefit._id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(benefit),
                     })
+                    savedBenefits.push(benefit)
                 } else {
-                    await fetch("/api/flexpay/benefits", {
+                    // Create new benefit and capture the returned _id
+                    const res = await fetch("/api/flexpay/benefits", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(benefit),
                     })
+                    if (res.ok) {
+                        const newBenefit = await res.json()
+                        savedBenefits.push({ ...benefit, _id: newBenefit._id })
+                    } else {
+                        savedBenefits.push(benefit)
+                    }
                 }
             }
+            // Update state with the new IDs to prevent duplicate creation
+            setBenefits(savedBenefits)
             setMessage("Saved successfully!")
             await fetch("/api/revalidate?path=/flexpay")
         } catch {

@@ -152,7 +152,21 @@ export default function FlexpayPricingEditor() {
         fetch("/api/content/flexpay-pricing")
             .then((res) => (res.ok ? res.json() : null))
             .then((data) => {
-                if (data?.plans && data.plans.length > 0) setPlans(data.plans)
+                if (data?.plans && data.plans.length > 0) {
+                    // Normalize plans to ensure all required fields exist
+                    const normalizedPlans = data.plans.map((plan: Partial<PricingPlan>) => ({
+                        name: plan.name || "Unnamed System",
+                        category: plan.category || "Home Series",
+                        price: plan.price || "₦0",
+                        specifications: plan.specifications || [],
+                        features: plan.features || [],
+                        flexpay: plan.flexpay || { downpayment: "₦0", installment: "₦0/month", duration: "12 months" },
+                        popular: plan.popular || false,
+                        ctaText: plan.ctaText || "Get Started",
+                        ctaLink: plan.ctaLink || "https://wa.me/27108803948"
+                    }))
+                    setPlans(normalizedPlans)
+                }
                 if (data?.categories && data.categories.length > 0) setCategories(data.categories)
             })
             .catch(() => { })
@@ -163,22 +177,27 @@ export default function FlexpayPricingEditor() {
         setIsSaving(true)
         setMessage("")
         try {
+            console.log("[Admin] Saving plans:", plans)
+            console.log("[Admin] Saving categories:", categories)
             const res = await fetch("/api/content/flexpay-pricing", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ plans, categories }),
             })
+            const responseData = await res.json()
+            console.log("[Admin] Save response:", res.status, responseData)
             if (res.ok) {
                 setMessage("Saved successfully!")
                 await fetch("/api/revalidate?path=/flexpay")
             } else {
-                setMessage("Failed to save")
+                setMessage(`Failed to save: ${responseData.error || 'Unknown error'}`)
             }
-        } catch {
+        } catch (err) {
+            console.error("[Admin] Save error:", err)
             setMessage("Error saving")
         } finally {
             setIsSaving(false)
-            setTimeout(() => setMessage(""), 3000)
+            setTimeout(() => setMessage(""), 5000)
         }
     }
 

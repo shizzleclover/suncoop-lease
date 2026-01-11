@@ -40,6 +40,11 @@ export async function PUT(
         const { section } = await params
         const body = await request.json()
 
+        console.log('[API PUT] Section:', section)
+        console.log('[API PUT] Body received:', JSON.stringify(body, null, 2))
+        console.log('[API PUT] Has plans:', !!body.plans, 'Count:', body.plans?.length)
+        console.log('[API PUT] Has categories:', !!body.categories, 'Count:', body.categories?.length)
+
         // Remove _id from body to prevent ImmutableField error
         const { _id, ...updateData } = body
 
@@ -48,6 +53,9 @@ export async function PUT(
             { ...updateData, updatedAt: new Date() },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         )
+
+        console.log('[API PUT] Saved content ID:', content?._id)
+        console.log('[API PUT] Saved plans count:', content?.plans?.length)
 
         return NextResponse.json(content)
     } catch (error) {
