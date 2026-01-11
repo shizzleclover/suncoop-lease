@@ -16,19 +16,28 @@ const defaultContent: FooterContent = {
 }
 
 export default function Footer() {
-  const [content, setContent] = useState<FooterContent>(defaultContent)
+  const [content, setContent] = useState<FooterContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/content/footer")
+    fetch("/api/content/footer", { cache: 'no-store' })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) setContent({ ...defaultContent, ...data })
+        else setContent(defaultContent)
       })
-      .catch(() => { })
+      .catch(() => setContent(defaultContent))
+      .finally(() => setIsLoading(false))
   }, [])
 
+  const displayContent = content || defaultContent
+
   const handleInterest = () => {
-    window.location.href = `https://wa.me/${content.whatsapp}`
+    window.location.href = `https://wa.me/${displayContent.whatsapp}`
+  }
+
+  if (isLoading) {
+    return <footer className="text-white py-12 md:py-16 px-4 sm:px-6 md:px-12" style={{ backgroundColor: "#1a1a1a" }}><div className="max-w-6xl mx-auto h-64"></div></footer>
   }
 
   return (
@@ -150,13 +159,13 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-gray-400 text-xs uppercase tracking-wide mb-1">Support</p>
-                <p className="text-white font-medium">{content.phone}</p>
+                <p className="text-white font-medium">{displayContent.phone}</p>
                 <a
-                  href={`mailto:${content.email}`}
+                  href={`mailto:${displayContent.email}`}
                   className="hover:opacity-80 transition-opacity"
                   style={{ color: "#ffcd00" }}
                 >
-                  {content.email}
+                  {displayContent.email}
                 </a>
               </div>
             </div>

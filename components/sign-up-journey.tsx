@@ -43,32 +43,41 @@ const iconMap: { [key: string]: any } = {
 }
 
 export default function SignUpJourney() {
-  const [content, setContent] = useState<JourneyContent>(defaultContent)
+  const [content, setContent] = useState<JourneyContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/content/journey")
+    fetch("/api/content/journey", { cache: 'no-store' })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) setContent({ ...defaultContent, ...data })
+        else setContent(defaultContent)
       })
-      .catch(() => { })
+      .catch(() => setContent(defaultContent))
+      .finally(() => setIsLoading(false))
   }, [])
+
+  const displayContent = content || defaultContent
+
+  if (isLoading) {
+    return <section className="py-16 md:py-24 px-6 md:px-12" style={{ backgroundColor: "#f9f9f9" }}><div className="max-w-6xl mx-auto h-64"></div></section>
+  }
 
   return (
     <section className="py-16 md:py-24 px-6 md:px-12" style={{ backgroundColor: "#f9f9f9" }}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">{content.title}</h2>
-          <p className="text-gray-600 text-lg">{content.subtitle}</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4">{displayContent.title}</h2>
+          <p className="text-gray-600 text-lg">{displayContent.subtitle}</p>
         </div>
 
         {/* Desktop Layout - Horizontal Timeline */}
         <div className="hidden md:block">
           <div className="flex items-center justify-between relative">
-            {content.steps.map((step, idx) => {
+            {displayContent.steps.map((step, idx) => {
               const Icon = iconMap[step.icon] || Lightbulb
-              const isLast = idx === content.steps.length - 1
+              const isLast = idx === displayContent.steps.length - 1
               const isFirst = idx === 0
               return (
                 <div key={idx} className="flex items-center flex-1">
@@ -106,9 +115,9 @@ export default function SignUpJourney() {
         {/* Mobile Layout - Centered Vertical Timeline */}
         <div className="md:hidden">
           <div className="flex flex-col items-center">
-            {content.steps.map((step, idx) => {
+            {displayContent.steps.map((step, idx) => {
               const Icon = iconMap[step.icon] || Lightbulb
-              const isLast = idx === content.steps.length - 1
+              const isLast = idx === displayContent.steps.length - 1
               const isFirst = idx === 0
               return (
                 <div key={idx} className="flex flex-col items-center">

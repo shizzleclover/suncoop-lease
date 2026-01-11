@@ -34,20 +34,26 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
-  const [content, setContent] = useState<HeaderContent>(defaultContent)
+  const [content, setContent] = useState<HeaderContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const lastScrollY = useRef(0)
 
   useEffect(() => {
-    fetch("/api/content/header")
+    fetch("/api/content/header", { cache: 'no-store' })
       .then(res => res.ok ? res.json() : null)
       .then(data => {
         if (data) setContent({ ...defaultContent, ...data })
+        else setContent(defaultContent)
       })
-      .catch(() => { })
+      .catch(() => setContent(defaultContent))
+      .finally(() => setIsLoading(false))
   }, [])
 
+  // Use loaded content or default while loading
+  const displayContent = content || defaultContent
+
   const handleInterest = () => {
-    window.location.href = `https://wa.me/${content.whatsappNumber}`
+    window.location.href = `https://wa.me/${displayContent.whatsappNumber}`
   }
 
   // Scroll detection for navbar color change and hide/show
@@ -101,7 +107,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <Image
-              src={content.logoUrl || "/suncoopng-logo.png"}
+              src={displayContent.logoUrl || "/suncoopng-logo.png"}
               alt="Suncoopng"
               width={240}
               height={70}
@@ -113,7 +119,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex gap-6 lg:gap-8 items-center flex-1 justify-center text-sm font-bold">
-            {content.navItems.map((item, idx) => (
+            {displayContent.navItems.map((item, idx) => (
               <Link key={idx} href={item.href} className="hover:opacity-70 transition">
                 {item.label}
               </Link>
@@ -126,7 +132,7 @@ export default function Header() {
             className="hidden md:block text-white px-6 py-2 rounded-full font-bold text-sm hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "#000000" }}
           >
-            {content.ctaButtonText}
+            {displayContent.ctaButtonText}
           </button>
 
           {/* Mobile Menu Button */}
@@ -157,7 +163,7 @@ export default function Header() {
 
         {/* Menu content */}
         <div className="flex flex-col items-center justify-center h-full gap-8">
-          {content.navItems.map((item, idx) => (
+          {displayContent.navItems.map((item, idx) => (
             <Link
               key={idx}
               href={item.href}
@@ -177,7 +183,7 @@ export default function Header() {
             className="mt-4 text-white px-8 py-3 rounded-full font-bold text-lg hover:opacity-90 transition-opacity"
             style={{ backgroundColor: "#000000" }}
           >
-            {content.ctaButtonText}
+            {displayContent.ctaButtonText}
           </button>
         </div>
       </div>

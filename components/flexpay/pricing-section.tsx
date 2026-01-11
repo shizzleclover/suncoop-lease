@@ -48,9 +48,12 @@ export default function FlexpayPricingSection() {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        fetch("/api/content/flexpay-pricing")
+        fetch("/api/content/flexpay-pricing", { cache: 'no-store' })
             .then((res) => (res.ok ? res.json() : null))
             .then((data) => {
+                console.log("[FlexpayPricing] API Response:", data)
+                console.log("[FlexpayPricing] Plans:", data?.plans)
+                console.log("[FlexpayPricing] Categories:", data?.categories)
                 if (data?.plans && data.plans.length > 0) {
                     setPlans(data.plans)
                 }
@@ -58,7 +61,9 @@ export default function FlexpayPricingSection() {
                     setCategories(data.categories)
                 }
             })
-            .catch(() => { })
+            .catch((err) => {
+                console.error("[FlexpayPricing] Error:", err)
+            })
             .finally(() => setIsLoading(false))
     }, [])
 

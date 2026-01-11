@@ -18,7 +18,13 @@ export async function GET(
             return NextResponse.json({ error: 'Section not found' }, { status: 404 })
         }
 
-        return NextResponse.json(content)
+        return NextResponse.json(content, {
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        })
     } catch (error) {
         console.error('Error fetching content:', error)
         return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 })

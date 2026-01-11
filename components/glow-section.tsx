@@ -13,21 +13,30 @@ const defaultContent: GlowContent = {
 }
 
 export default function GlowSection() {
-    const [content, setContent] = useState<GlowContent>(defaultContent)
+    const [content, setContent] = useState<GlowContent | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        fetch("/api/content/glow")
+        fetch("/api/content/glow", { cache: 'no-store' })
             .then(res => res.ok ? res.json() : null)
             .then(data => {
                 if (data) setContent({ ...defaultContent, ...data })
+                else setContent(defaultContent)
             })
-            .catch(() => { })
+            .catch(() => setContent(defaultContent))
+            .finally(() => setIsLoading(false))
     }, [])
 
+    const displayContent = content || defaultContent
+
     // Parse title for "glow" highlight
-    const titleParts = content.title.toLowerCase().includes("glow")
-        ? content.title.split(/glow/i)
-        : [content.title, ""]
+    const titleParts = displayContent.title.toLowerCase().includes("glow")
+        ? displayContent.title.split(/glow/i)
+        : [displayContent.title, ""]
+
+    if (isLoading) {
+        return <section className="py-16 md:py-24 px-6 md:px-12 bg-white"><div className="max-w-6xl mx-auto h-64"></div></section>
+    }
 
     return (
         <section className="py-16 md:py-24 px-6 md:px-12 bg-white">
@@ -37,7 +46,7 @@ export default function GlowSection() {
                     <div className="order-1 md:order-1">
                         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6">
                             {titleParts[0]}
-                            {content.title.toLowerCase().includes("glow") && (
+                            {displayContent.title.toLowerCase().includes("glow") && (
                                 <>
                                     <br />
                                     <span style={{ color: "#ffcd00" }}>glow</span>
@@ -47,7 +56,7 @@ export default function GlowSection() {
                         </h2>
 
                         <p className="text-gray-600 text-base md:text-lg mb-6 max-w-md">
-                            {content.description}
+                            {displayContent.description}
                         </p>
 
                         <p className="text-gray-800 text-base md:text-lg font-medium">

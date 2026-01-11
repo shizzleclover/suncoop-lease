@@ -38,40 +38,49 @@ const defaultContent: SunnySideContent = {
 }
 
 export default function SunnySideSection() {
-    const [content, setContent] = useState<SunnySideContent>(defaultContent)
+    const [content, setContent] = useState<SunnySideContent | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        fetch("/api/content/sunny-side")
+        fetch("/api/content/sunny-side", { cache: 'no-store' })
             .then(res => res.ok ? res.json() : null)
             .then(data => {
                 if (data) setContent({ ...defaultContent, ...data })
+                else setContent(defaultContent)
             })
-            .catch(() => { })
+            .catch(() => setContent(defaultContent))
+            .finally(() => setIsLoading(false))
     }, [])
 
+    const displayContent = content || defaultContent
+
     const handleInterest = () => {
-        window.location.href = content.ctaButtonLink
+        window.location.href = displayContent.ctaButtonLink
+    }
+
+    if (isLoading) {
+        return <section className="py-12 md:py-16 px-6 md:px-12" style={{ backgroundColor: "#f5f5f5" }}><div className="max-w-5xl mx-auto h-64"></div></section>
     }
 
     return (
-        <section className="py-12 md:py-16 px-6 md:px-12" style={{ backgroundColor: content.backgroundColor }}>
+        <section className="py-12 md:py-16 px-6 md:px-12" style={{ backgroundColor: displayContent.backgroundColor }}>
             <div className="max-w-5xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 mb-12">
                     {/* Left column - Headline */}
                     <div className="lg:col-span-1">
                         <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight mb-4">
-                            {content.headline}
+                            {displayContent.headline}
                             <br />
-                            {content.headlineSecond}
+                            {displayContent.headlineSecond}
                         </h2>
                         <p className="text-gray-600 text-sm md:text-base">
-                            {content.description}
+                            {displayContent.description}
                         </p>
                     </div>
 
                     {/* Middle column - Features 1-3 */}
                     <div className="lg:col-span-1 space-y-6">
-                        {content.features.slice(0, 3).map((feature, idx) => (
+                        {displayContent.features.slice(0, 3).map((feature, idx) => (
                             <div key={idx} className="flex gap-3">
                                 <span className="text-yellow-400 text-lg flex-shrink-0">✦</span>
                                 <div>
@@ -84,7 +93,7 @@ export default function SunnySideSection() {
 
                     {/* Right column - Features 4+ */}
                     <div className="lg:col-span-1 space-y-6">
-                        {content.features.slice(3).map((feature, idx) => (
+                        {displayContent.features.slice(3).map((feature, idx) => (
                             <div key={idx} className="flex gap-3">
                                 <span className="text-yellow-400 text-lg flex-shrink-0">✦</span>
                                 <div>
@@ -99,17 +108,17 @@ export default function SunnySideSection() {
                 {/* CTA Banner */}
                 <div
                     className="rounded-full py-2.5 sm:py-4 md:py-5 px-4 sm:px-6 md:px-12 flex flex-row items-center justify-center gap-3 sm:gap-4 md:gap-6"
-                    style={{ backgroundColor: content.ctaColor }}
+                    style={{ backgroundColor: displayContent.ctaColor }}
                 >
                     <h3 className="text-sm sm:text-lg md:text-xl font-bold text-black text-center sm:text-left whitespace-nowrap">
-                        {content.ctaText}
+                        {displayContent.ctaText}
                     </h3>
                     <button
                         onClick={handleInterest}
                         className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm text-white hover:opacity-90 transition-opacity whitespace-nowrap"
                         style={{ backgroundColor: "#000000" }}
                     >
-                        {content.ctaButtonText}
+                        {displayContent.ctaButtonText}
                     </button>
                 </div>
             </div>
