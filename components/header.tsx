@@ -18,7 +18,7 @@ interface HeaderContent {
 }
 
 const defaultContent: HeaderContent = {
-  logoUrl: "/suncoopng-logo.png",
+  logoUrl: "/Arojin-Sunbox-Logo.png",
   navItems: [
     { label: "FLEXGRID", href: "/" },
     { label: "FLEXPAY", href: "/flexpay" },
